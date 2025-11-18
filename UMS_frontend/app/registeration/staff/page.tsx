@@ -4,6 +4,8 @@ import Sidebar from "../../../components/sidebar";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
 
+
+
 const CourseApplication: React.FC = () => {
   const columns = [
     { accessorKey: "id", header: "ID" },
