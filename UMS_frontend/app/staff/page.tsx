@@ -4,7 +4,7 @@ import Sidebar from "../../components/sidebar";
 
 const Dashboard: React.FC = () => {
   return (
-    <ProtectedRoute allowedRoles={["student", "staff", "admin"]}>
+    <ProtectedRoute allowedRoles={["staff"]}>
       <div style={{ display: "flex" }}>
         <Sidebar />
         <div style={{ padding: "20px", flex: 1 }}>
