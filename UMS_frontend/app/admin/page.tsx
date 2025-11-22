@@ -1,19 +1,18 @@
-// pages/dashboard.tsx
-import ProtectedRoute from "../../components/ProtectedRoutes";
-import Sidebar from "../../components/sidebar";
+"use server";
 
-const Dashboard: React.FC = () => {
+import ProtectedRoute from "../../components/ProtectedRoutes";
+import { getAllStaff } from "./actions";
+import { StaffTable } from "./components/staffTable";
+
+const StaffManagement = async () => {
+  const response = await getAllStaff("", "");
+  const data = response?.staff ?? [];
+
   return (
-    <ProtectedRoute allowedRoles={["admin"]}>
-      <div style={{ display: "flex" }}>
-        <Sidebar />
-        <div style={{ padding: "20px", flex: 1 }}>
-          <h1>Dashboard</h1>
-          <p>landing page with uni logo</p>
-        </div>
-      </div>
+    <ProtectedRoute allowedRoles={["admin", "super_admin"]}>
+      <StaffTable initialData={data}  />
     </ProtectedRoute>
   );
 };
 
-export default Dashboard;
+export default StaffManagement;
