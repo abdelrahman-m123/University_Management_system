@@ -2,13 +2,26 @@
 "use client";
 import Link from "next/link";
 import { useEffect, useState } from "react";
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
 
 const Sidebar: React.FC = () => {
   const [role, setRole] = useState<string | null>(null);
-  const username = localStorage.getItem("username");
+  const [username, setUsername] = useState<string | null>(null);
+  const router = useRouter();
+  const getInitials = (name?: string | null) => {
+    if (!name) return "U";
+    return name
+      .split(" ")
+      .map((n) => n[0])
+      .slice(0, 2)
+      .join("")
+      .toUpperCase();
+  };
 
   useEffect(() => {
     setRole(localStorage.getItem("role"));
+    setUsername(localStorage.getItem("username"));
   }, []);
 
   return (
@@ -29,35 +42,45 @@ const Sidebar: React.FC = () => {
 
         {role === "student" && (
           <>
-            <Link
+            {/* <Link
               href="/student"
               className="block px-4 py-3 text-gray-700 rounded-l hover:bg-white hover:border hover:border-black-100 transition-all duration-100 font-medium"
             >
               Home
-            </Link>
+            </Link> */}
             <Link
-              href="/Courses"
+              href="/Courses/student"
               className="block px-4 py-3 text-gray-700 rounded-l hover:bg-white hover:border hover:border-black-100 transition-all duration-100 font-medium"
             >
-               Courses
+              Courses
             </Link>
             <Link
               href="/registeration/student"
               className="block px-4 py-3 text-gray-700 rounded-l hover:bg-white hover:border hover:border-black-100 transition-all duration-100 font-medium"
             >
-               Course Registeration
+              Course Registeration
             </Link>
-            
           </>
         )}
 
-        {(role === "staff" || role === "admin") && (
+        {(role == "Doctor" || role == "TA") && (
           <>
             <Link
-              href="/staff"
+              href="/Courses/Doctor"
               className="block px-4 py-3 text-gray-700 rounded-l hover:bg-white hover:border hover:border-black-100 transition-all duration-100 font-medium"
             >
-              Home
+              Assigned Courses
+            </Link>
+          </>
+        )}
+
+        {role === "admin" && (
+          <>
+            <Link
+              href="/admin"
+              className="block px-4 py-3 text-gray-700 rounded-l hover:bg-white hover:border hover:border-black-100 transition-all duration-100 font-medium"
+            >
+              User Management
             </Link>
             <Link
               href="/registeration/staff"
@@ -65,24 +88,35 @@ const Sidebar: React.FC = () => {
             >
               Course Applications
             </Link>
+            <Link
+              href="/Courses/admin"
+              className="block px-4 py-3 text-gray-700 rounded-l hover:bg-white hover:border hover:border-black-100 transition-all duration-100 font-medium"
+            >
+              Course Management
+            </Link>
           </>
-        )}
-
-        {role === "admin" && (
-          <Link
-            href="/admin"
-            className="block px-4 py-3 text-gray-700 rounded-l hover:bg-white hover:border hover:border-black-100 transition-all duration-100 font-medium"
-          >
-            Home
-          </Link>
         )}
       </nav>
 
-      {/* Current Role Badge */}
-      <div className="absolute bottom-6">
-        <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800 capitalize">
-          {username} 
-        </span>
+      {/* Bottom area */}
+      <div className="mt-6 absolute bottom-6 flex flex-col items-center gap-3">
+        <div className="flex items-center gap-3">
+          <div className="w-10 h-10 rounded-full bg-blue-900 text-white flex items-center justify-center font-semibold">
+            {getInitials(username)}
+          </div>
+          <div className="text-sm">
+            <div className="font-medium text-gray-800">{username ?? "User"}</div>
+            <div className="text-xs text-gray-500 capitalize">{role ?? "guest"}</div>
+          </div>
+        </div>
+
+        <Button variant={"outline"} className="w-full" onClick={()=>{
+          localStorage.clear();
+          router.push("/login");
+
+        }}>
+          Logout
+        </Button>
       </div>
     </div>
   );

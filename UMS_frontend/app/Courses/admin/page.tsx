@@ -11,12 +11,12 @@ const CourseApplication = async () => {
   const columns = [
     { accessorKey: "course_name", header: "Course Name" },
     { accessorKey: "credit_hours", header: "Credit Hours" },
-    { accessorKey: "registered_students", header: "Registered" },
+    // { accessorKey: "registered_students", header: "Registered" },
     { accessorKey: "max_registered_students", header: "Max Students" },
   ];
 
   return (
-    <ProtectedRoute allowedRoles={["staff", "admin"]}>
+    <ProtectedRoute allowedRoles={["admin"]}>
       <CoursesTable initialData={data} columns={columns} />
     </ProtectedRoute>
   );

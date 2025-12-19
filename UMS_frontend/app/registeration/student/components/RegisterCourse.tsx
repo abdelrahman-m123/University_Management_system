@@ -13,44 +13,28 @@ import {
   DialogTrigger,
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
+import { registerCourse } from "../actions";
 
 export function DialogCreateCourse(
-    {handleAccept, handleReject,
-      Row}: {handleReject: (number, number)=> void;handleAccept: (number, number)=> void;Row: any;}
+    {Row, handleUpdate}: {Row: any, handleUpdate: () => void}
 ) {
+  const [courseName, setCourseName] = useState("");
+  const [creditHours, setCreditHours] = useState(0);
   const [open, setOpen] = useState(false);
   const [userId, setUserId] = useState<string | null>("");
 
   const handleSubmit = async () => {
-    // TODO: Add course creation logic here
-    console.log("Creating course:",  userId, Row.course_id, Row.registered_students );
-
-    const res = await handleAccept(Row.course_id, Row.stu_id);
-    console.log(res.success);
-    if (res.success){
-        // await update();
-    setOpen(false);
-    }
-    
-    // Reset form
-    
-    
-  };
-
-  const handleRejectClick = async () => {
-    // TODO: Add course creation logic here
     console.log("Creating course:",  userId, Row.course_id );
 
-    const res = await handleReject(Row.course_id, Row.stu_id);
+    const res = await registerCourse(Row.course_id, userId);
+
     console.log(res.success);
     if (res.success){
-        // await update();
+    await handleUpdate();
+    setCourseName("");
+    setCreditHours(0);
     setOpen(false);
     }
-    
-    // Reset form
-    
-    
   };
 
   useEffect(() => {
@@ -60,24 +44,25 @@ export function DialogCreateCourse(
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button>Review</Button>
+        <Button>Register</Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
-          <DialogTitle> {Row.course_name}</DialogTitle>
+          <DialogTitle>Register {Row.course_name}</DialogTitle>
           <DialogDescription>
-            {Row.stu_email} wants to register {Row.course_name} <br></br> {Row.max_registered_students - Row.registered_students} spots left spots left.
+            {Row.max_registered_students - Row.registered_students} spots left.
           </DialogDescription>
         </DialogHeader>
         
         <DialogFooter className="sm:justify-end gap-2">
-           
-          <Button onClick={handleSubmit}>
-            Accept
-          </Button>
-           <Button onClick={handleRejectClick} variant="destructive">
-              Reject
+          <DialogClose asChild>
+            <Button type="button" variant="secondary">
+              Cancel
             </Button>
+          </DialogClose>
+          <Button onClick={handleSubmit}>
+            Register
+          </Button>
         </DialogFooter> 
        </DialogContent>
     </Dialog>

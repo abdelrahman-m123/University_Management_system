@@ -43,8 +43,8 @@ export function CoursesTable({ initialData }) {
         </span>
       ),
     },
-    { accessorKey: "registered_students", header: "Registered" },
-    { accessorKey: "max_registered_students", header: "Max Students" },
+    // { accessorKey: "registered_students", header: "Registered" },
+    // { accessorKey: "max_registered_students", header: "Max Students" },
   ];
 
   const handleSearch = async (query: string = searchQuery) => {
