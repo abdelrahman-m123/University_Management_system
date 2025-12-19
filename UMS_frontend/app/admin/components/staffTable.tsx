@@ -115,8 +115,9 @@ export function StaffTable({ initialData }) {
 
   const handleRoleFilterChange = (e: string) => {
     const value = e;
-    setRoleFilter(value);
-    handleSearch(searchQuery, value);
+    const roleValue = value === "any" ? "" : value; 
+    setRoleFilter(roleValue);
+    handleSearch(searchQuery, roleValue);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -187,6 +188,7 @@ export function StaffTable({ initialData }) {
                 <SelectValue placeholder="Select role" />
               </SelectTrigger>
               <SelectContent>
+                <SelectItem value="any">All Roles</SelectItem>
                 <SelectItem value="TA">Teaching Assistant</SelectItem>
                 <SelectItem value="Doctor">Doctor/Professor</SelectItem>
                 <SelectItem value="admin">Admin</SelectItem>
