@@ -7,19 +7,27 @@ import { Input } from "@/components/ui/input";
 import { DialogCreateCourse } from "./CreateCourse";
 import Sidebar from "@/components/sidebar";
 import { getAllCourses, removeCourse } from "../actions";
+import { CustomPagination } from "@/components/CustomPagination"; // Add this import
 
 export function CoursesTable({ initialData, columns }) {
   const [data, setData] = useState(initialData);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalCount, setTotalCount] = useState(0);
 
-  const handleSearch = async (query: string = searchQuery) => {
+  // Update fetchData function to include pagination
+  const fetchData = async (page: number = 1, search: string = "") => {
     setIsLoading(true);
     try {
-      const response = await getAllCourses(query);
+      const response = await getAllCourses(search, page, pageSize); // Add page and pageSize
       if (response?.courses) {
         setData(response.courses);
+        setTotalCount(response.totalCount || 0); // Set total count from response
       }
     } catch (error) {
       console.error("Search failed:", error);
@@ -28,18 +36,20 @@ export function CoursesTable({ initialData, columns }) {
     }
   };
 
+  const handleSearch = async (query: string = searchQuery) => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchData(1, query);
+  };
+
+  // Update updateTable to use pagination
   const updateTable = async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      const response = await getAllCourses("");
-      if (response?.courses) {
-        setData(response.courses);
-      }
-    } catch (error) {
-      console.error("Search failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    fetchData(currentPage, searchQuery);
+  };
+
+  // Add page change handler
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchData(page, searchQuery);
   };
 
   const handleRemoveCourse = async (courseId: number) => {
@@ -54,15 +64,13 @@ export function CoursesTable({ initialData, columns }) {
     const value = e.target.value;
     setSearchQuery(value);
 
-    // Clear previous timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Set new timeout
     timeoutRef.current = setTimeout(() => {
       handleSearch(value);
-    }, 500); // 500ms delay
+    }, 500);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -75,6 +83,7 @@ export function CoursesTable({ initialData, columns }) {
   };
 
   useEffect(() => {
+    updateTable();
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -119,11 +128,21 @@ export function CoursesTable({ initialData, columns }) {
               onKeyPress={handleKeyPress}
             />
             <Button onClick={() => handleSearch(searchQuery)} disabled={isLoading}>
-              search
+              {isLoading ? "..." : "Search"}
             </Button>
           </div>
 
           <DataTable columns={columnsWithActions} data={data} />
+        </div>
+        
+        {/* Add CustomPagination component */}
+        <div className="mt-4">
+          <CustomPagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalCount}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>

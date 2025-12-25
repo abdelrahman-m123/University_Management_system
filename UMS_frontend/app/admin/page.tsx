@@ -5,7 +5,7 @@ import { getAllStaff } from "./actions";
 import { StaffTable } from "./components/staffTable";
 
 const StaffManagement = async () => {
-  const response = await getAllStaff("", "");
+  const response = await getAllStaff("", "",1,5);
   const data = response?.staff ?? [];
 
   return (
