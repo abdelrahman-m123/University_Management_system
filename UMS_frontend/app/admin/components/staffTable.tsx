@@ -10,6 +10,7 @@ import { getAllStaff, updateStaffRole, deleteStaff } from "../actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DialogAssignCourse } from "./AssignCourse";
 import { DialogEditStaff } from "./EditStaff";
+import { CustomPagination } from "@/components/CustomPagination"; // Add this import
 
 export function StaffTable({ initialData }) {
   const [data, setData] = useState(initialData);
@@ -17,6 +18,11 @@ export function StaffTable({ initialData }) {
   const [roleFilter, setRoleFilter] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalCount, setTotalCount] = useState(0);
 
   const getRoleColor = (role: string) => {
     switch (role?.toLowerCase()) {
@@ -47,23 +53,16 @@ export function StaffTable({ initialData }) {
       ),
     },
     { accessorKey: "contact_info", header: "Contact Info" },
-    // { 
-    //   accessorKey: "office_hours", 
-    //   header: "Office Hours",
-    //   cell: ({ row }) => (
-    //     <span>
-    //       {row.original.office_hours ? new Date(row.original.office_hours).toLocaleString() : 'Not set'}
-    //     </span>
-    //   )
-    // },
   ];
 
-  const handleSearch = async (query: string = searchQuery, role: string = roleFilter) => {
+  // Update fetchData function to include pagination
+  const fetchData = async (page: number = 1, search: string = "", role: string = "") => {
     setIsLoading(true);
     try {
-      const response = await getAllStaff(query, role);
+      const response = await getAllStaff(search, role, page, pageSize); // Add page and pageSize
       if (response?.staff) {
         setData(response.staff);
+        setTotalCount(response.totalCount || 0); // Set total count from response
       }
     } catch (error) {
       console.error("Search failed:", error);
@@ -72,18 +71,20 @@ export function StaffTable({ initialData }) {
     }
   };
 
+  const handleSearch = async (query: string = searchQuery, role: string = roleFilter) => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchData(1, query, role);
+  };
+
+  // Update updateTable to use pagination
   const updateTable = async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      const response = await getAllStaff(searchQuery,roleFilter);
-      if (response?.staff) {
-        setData(response.staff);
-      }
-    } catch (error) {
-      console.error("Failed to update:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    fetchData(currentPage, searchQuery, roleFilter);
+  };
+
+  // Add page change handler
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchData(page, searchQuery, roleFilter);
   };
 
   const handleUpdateRole = async (staffId: number, newRole: string) => {
@@ -102,22 +103,21 @@ export function StaffTable({ initialData }) {
     const value = e.target.value;
     setSearchQuery(value);
 
-    // Clear previous timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Set new timeout
     timeoutRef.current = setTimeout(() => {
       handleSearch(value, roleFilter);
-    }, 500); // 500ms delay
+    }, 500);
   };
 
   const handleRoleFilterChange = (e: string) => {
     const value = e;
     const roleValue = value === "any" ? "" : value; 
     setRoleFilter(roleValue);
-    handleSearch(searchQuery, roleValue);
+    setCurrentPage(1); // Reset to first page when filtering
+    fetchData(1, searchQuery, roleValue);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -130,6 +130,7 @@ export function StaffTable({ initialData }) {
   };
 
   useEffect(() => {
+    updateTable();
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -144,19 +145,11 @@ export function StaffTable({ initialData }) {
       header: "Actions",
       cell: ({ row }) => (
         <div className="flex gap-1 justify-center">
-        
-        {(row.original.role == "Doctor" || row.original.role == "TA") ? (<DialogAssignCourse row={row.original} update={updateTable}></DialogAssignCourse>) : null}
-        <DialogEditStaff row={row.original} update={updateTable}></DialogEditStaff>
-
+          {(row.original.role == "Doctor" || row.original.role == "TA") ? (
+            <DialogAssignCourse row={row.original} update={updateTable}></DialogAssignCourse>
+          ) : null}
+          <DialogEditStaff row={row.original} update={updateTable}></DialogEditStaff>
         </div>
-
-        
-        
-        // <DialogCreateStaff 
-        //   handleUpdateRole={handleUpdateRole} 
-        //   handleDelete={handleDeleteStaff} 
-        //   staff={row.original} 
-        // />
       ),
     },
   ];
@@ -181,7 +174,6 @@ export function StaffTable({ initialData }) {
                 onChange={handleInputChange}
                 onKeyPress={handleKeyPress}
               />
-              
             </div>
             <Select value={roleFilter} onValueChange={(e) => handleRoleFilterChange(e)}>
               <SelectTrigger>
@@ -195,14 +187,22 @@ export function StaffTable({ initialData }) {
                 <SelectItem value="super_admin">Super Admin</SelectItem>
               </SelectContent>
             </Select>
-            {/* <Button onClick={() => handleSearch(searchQuery, roleFilter)} disabled={isLoading}>
-                Search
-              </Button> */}
           </div>
 
           <DataTable columns={columnsWithActions} data={data} />
+        </div>
+        
+        {/* Add CustomPagination component */}
+        <div className="mt-4">
+          <CustomPagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalCount}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>
   );
 }
+

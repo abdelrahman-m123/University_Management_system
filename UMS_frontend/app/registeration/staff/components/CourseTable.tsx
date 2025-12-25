@@ -4,17 +4,22 @@ import { useState, useRef, useEffect } from "react";
 import { DataTable } from "@/components/ui/datatable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
-import { DialogCreateCourse } from "./CreateCourse";
+import { DialogReviewApplication } from "./ReviewApplication";
 import Sidebar from "@/components/sidebar";
 import { getAllApplications, AcceptApplication } from "../actions";
 import { RejectApplication } from "../actions";
+import { CustomPagination } from "@/components/CustomPagination"; // Add this import
 
 export function CoursesTable({ initialData }) {
-  const [data, setData] = useState(initialData);
+  const [data, setData] = useState([]);
   const [searchQuery, setSearchQuery] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
-
+  
+  // Add pagination state
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize: number = 5;
+  const [totalCount, setTotalCount] = useState(0);
 
   const getStatusColor = (status: string) => {
     switch (status?.toLowerCase()) {
@@ -29,7 +34,6 @@ export function CoursesTable({ initialData }) {
     }
   };
 
-
   const columns = [
     { accessorKey: "course_name", header: "Course Name" },
     { accessorKey: "credit_hours", header: "Credit Hours" },
@@ -43,16 +47,16 @@ export function CoursesTable({ initialData }) {
         </span>
       ),
     },
-    // { accessorKey: "registered_students", header: "Registered" },
-    // { accessorKey: "max_registered_students", header: "Max Students" },
   ];
 
-  const handleSearch = async (query: string = searchQuery) => {
+  // Update fetchData function to include pagination
+  const fetchData = async (page: number = 1, search: string = "") => {
     setIsLoading(true);
     try {
-      const response = await getAllApplications(query);
+      const response = await getAllApplications(search, page, pageSize);
       if (response?.courses) {
         setData(response.courses);
+        setTotalCount(response.totalCount || 0); // Set total count from response
       }
     } catch (error) {
       console.error("Search failed:", error);
@@ -61,31 +65,31 @@ export function CoursesTable({ initialData }) {
     }
   };
 
+  const handleSearch = async (query: string = searchQuery) => {
+    setCurrentPage(1); // Reset to first page when searching
+    fetchData(1, query);
+  };
+
+  // Update updateTable to use pagination
   const updateTable = async (): Promise<void> => {
-    setIsLoading(true);
-    try {
-      const response = await getAllApplications("");
-      if (response?.courses) {
-        setData(response.courses);
-      }
-    } catch (error) {
-      console.error("Search failed:", error);
-    } finally {
-      setIsLoading(false);
-    }
+    fetchData(currentPage, searchQuery);
+  };
+
+  // Add page change handler
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchData(page, searchQuery);
   };
 
   const handleAcceptRegister = async (courseId: number, stu_id: number) => {
     const res = await AcceptApplication(courseId, stu_id);
     await updateTable();
-
     return res;
   };
 
   const handleRejectRegister = async (courseId: number, stu_id: number) => {
     const res = await RejectApplication(courseId, stu_id);
     await updateTable();
-
     return res;
   };
 
@@ -93,15 +97,13 @@ export function CoursesTable({ initialData }) {
     const value = e.target.value;
     setSearchQuery(value);
 
-    // Clear previous timeout
     if (timeoutRef.current) {
       clearTimeout(timeoutRef.current);
     }
 
-    // Set new timeout
     timeoutRef.current = setTimeout(() => {
       handleSearch(value);
-    }, 500); // 500ms delay
+    }, 500);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLInputElement>) => {
@@ -114,6 +116,7 @@ export function CoursesTable({ initialData }) {
   };
 
   useEffect(() => {
+    updateTable();
     return () => {
       if (timeoutRef.current) {
         clearTimeout(timeoutRef.current);
@@ -127,9 +130,11 @@ export function CoursesTable({ initialData }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        
-        <DialogCreateCourse handleAccept={handleAcceptRegister} handleReject={handleRejectRegister} Row={row.original} />
-        
+        <DialogReviewApplication 
+          handleAccept={handleAcceptRegister} 
+          handleReject={handleRejectRegister} 
+          Row={row.original} 
+        />
       ),
     },
   ];
@@ -143,7 +148,6 @@ export function CoursesTable({ initialData }) {
             <h1 className="text-3xl font-semibold text-gray-800">
               Course Applications
             </h1>
-            {/* <DialogCreateCourse update={updateTable} /> */}
           </div>
 
           <div className="flex mb-4 w-full max-w-sm items-center gap-2">
@@ -154,11 +158,21 @@ export function CoursesTable({ initialData }) {
               onKeyPress={handleKeyPress}
             />
             <Button onClick={() => handleSearch(searchQuery)} disabled={isLoading}>
-              search
+              {isLoading ? "..." : "Search"}
             </Button>
           </div>
 
           <DataTable columns={columnsWithActions} data={data} />
+        </div>
+        
+        {/* Add CustomPagination component */}
+        <div className="mt-4">
+          <CustomPagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalCount}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>

@@ -5,8 +5,9 @@ import { DataTable } from "@/components/ui/datatable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import Sidebar from "@/components/sidebar";
-import { getAllCourses, removeCourse } from "../actions";
+import { getAllCourses } from "../actions";
 import { DialogCreateCourse } from "./RegisterCourse";
+import { CustomPagination } from "@/components/CustomPagination"; // Add this import
 
 export function CoursesTable() {
   const [data, setData] = useState([]);
@@ -14,6 +15,11 @@ export function CoursesTable() {
   const [isLoading, setIsLoading] = useState(false);
   const [stuId, setStuId] = useState<number | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
+  
+  // Add these pagination states
+  const [currentPage, setCurrentPage] = useState(1);
+  const [pageSize, setPageSize] = useState(5);
+  const [totalCount, setTotalCount] = useState(0);
 
   // Load student ID from localStorage
   useEffect(() => {
@@ -21,36 +27,42 @@ export function CoursesTable() {
     if (id) setStuId(Number(id));
   }, []);
 
-  // Fetch data AFTER stuId loads
-  useEffect(() => {
-    if (stuId === null) return; // prevent running before ID exists
-
-    const fetchData = async () => {
-      setIsLoading(true);
-      try {
-        const response = await getAllCourses("", stuId);
-        if (response?.courses) setData(response.courses);
-      } catch (error) {
-        console.error("Failed to load courses:", error);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-
-    fetchData();
-  }, [stuId]); // Runs once when stuId is available
-
-  const handleSearch = async (query: string = searchQuery) => {
+  // Update fetchData to use pagination
+  const fetchData = async (page: number = currentPage, search: string = "") => {
     if (stuId === null) return;
+    
     setIsLoading(true);
     try {
-      const response = await getAllCourses(query, stuId);
-      if (response?.courses) setData(response.courses);
+      // Pass page and pageSize to getAllCourses
+      const response = await getAllCourses(search, stuId, page, pageSize);
+      if (response?.courses) {
+        setData(response.courses);
+        setTotalCount(response.totalCount || 0); // Set total count from response
+      }
     } catch (error) {
-      console.error("Search failed:", error);
+      console.error("Failed to load courses:", error);
     } finally {
       setIsLoading(false);
     }
+  };
+
+  // Update initial fetch to use fetchData function
+  useEffect(() => {
+    if (stuId === null) return;
+    fetchData(1, "");
+  }, [stuId]);
+
+  // Update handleSearch to reset to page 1
+  const handleSearch = async (query: string = searchQuery) => {
+    if (stuId === null) return;
+    setCurrentPage(1); // Reset to page 1 when searching
+    fetchData(1, query);
+  };
+
+  // Add page change handler
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+    fetchData(page, searchQuery);
   };
 
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -63,8 +75,9 @@ export function CoursesTable() {
       handleSearch(value);
     }, 500);
   };
+  
   const handleUpdate = () => {
-    handleSearch();
+    fetchData(currentPage, searchQuery); // Use current page when updating
   };
 
   const getStatusColor = (status: string) => {
@@ -80,23 +93,26 @@ export function CoursesTable() {
     }
   };
 
-
   const columns = [
-  { accessorKey: "course_name", header: "Course Name" },
-  { accessorKey: "credit_hours", header: "Credit Hours" },
-  {
-    accessorKey: "status",
-    header: "Status",
-    cell: ({ row }) => {
-      const status = row.original.status;
-      return (
-        <span className={`px-2 py-1 rounded-full text-sm font-medium ${getStatusColor(row.original.status)}`}>
-          {row.original.status}
-        </span>
-      );
+    { accessorKey: "course_name", header: "Course Name" },
+    { accessorKey: "credit_hours", header: "Credit Hours" },
+    {
+      accessorKey: "status",
+      header: "Status",
+      cell: ({ row }) => {
+        const status = row.original.status;
+        return (
+          <span
+            className={`px-2 py-1 rounded-full text-sm font-medium ${getStatusColor(
+              row.original.status
+            )}`}
+          >
+            {row.original.status}
+          </span>
+        );
+      },
     },
-  },
-];
+  ];
 
   const columnsWithActions = [
     ...columns,
@@ -106,7 +122,9 @@ export function CoursesTable() {
       cell: ({ row }) => {
         return row.original.status === null ? (
           <DialogCreateCourse Row={row.original} handleUpdate={handleUpdate} />
-        ) : (<p>Application Sent</p>);
+        ) : (
+          <p>Application Sent</p>
+        );
       },
     },
   ];
@@ -137,6 +155,15 @@ export function CoursesTable() {
           </div>
 
           <DataTable columns={columnsWithActions} data={data} />
+        </div>
+        
+        <div className="mt-4">
+          <CustomPagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalCount}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>

@@ -1,21 +1,34 @@
-// In your actions file
 "use server"
 
 import axios from "axios";
+import { getAuthToken } from "@/common/cookieHelpers";
 
-export async function getAllStaff(search: string = "", role: string = "") {
+export async function getAllStaff(
+  search: string = "", 
+  role: string = "", 
+  page: number = 1, 
+  limit: number = 5
+) {
   try {
+    const token = await getAuthToken();
+    console.log("params: ", {search, role, page, limit})
     const resp = await axios.get(
       "http://localhost:3001/api/auth/getAllStaff",
       {
         params: {
           search: search,
-          role: role
+          role: role,
+          page: page,
+          limit: limit
+        },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       }
     );
-    console.log(resp);
-    return await resp.data;
+    console.log(resp.data);
+    return resp.data;
   } catch (error) {
     return { success: false, staff: [] };
   }
@@ -23,9 +36,13 @@ export async function getAllStaff(search: string = "", role: string = "") {
 
 export async function updateStaffRole(staffId: string, newRole: string) {
   try {
-    const response = await fetch(`/api/staff/${staffId}`, {
+    const token = await getAuthToken();
+    const response = await fetch(`http://localhost:3001/api/staff/${staffId}`, {
       method: 'PUT',
-      headers: { 'Content-Type': 'application/json' },
+      headers: { 
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${token}`
+      },
       body: JSON.stringify({ role: newRole })
     });
     return await response.json();
@@ -36,8 +53,12 @@ export async function updateStaffRole(staffId: string, newRole: string) {
 
 export async function deleteStaff(staffId: string) {
   try {
-    const response = await fetch(`/api/staff/${staffId}`, {
-      method: 'DELETE'
+    const token = await getAuthToken();
+    const response = await fetch(`http://localhost:3001/api/staff/${staffId}`, {
+      method: 'DELETE',
+      headers: {
+        'Authorization': `Bearer ${token}`
+      }
     });
     return await response.json();
   } catch (error) {
@@ -45,9 +66,9 @@ export async function deleteStaff(staffId: string) {
   }
 }
 
-// In your actions file
-export async function addStaff(staffData) {
+export async function addStaff(staffData: any) {
   try {
+    const token = await getAuthToken();
     const {username, email, password, role} = staffData;
     console.log(username);
     console.log(staffData);
@@ -61,6 +82,11 @@ export async function addStaff(staffData) {
             role: role,
         }
       ]
+    }, {
+      headers: {
+        'Authorization': `Bearer ${token}`,
+        'Content-Type': 'application/json'
+      }
     });
     return await response.data;
   } catch (error) {
@@ -78,11 +104,17 @@ export async function editStaff(staffData: {
   office_hours?: string;
 }) {
   try {
+    const token = await getAuthToken();
     const resp = await axios.put(
       "http://localhost:3001/api/auth/editStaff",
-      staffData
+      staffData,
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
     );
-
     console.log(resp);
     return resp.data;
   } catch (err: any) {
@@ -90,21 +122,26 @@ export async function editStaff(staffData: {
       axios.isAxiosError(err) && err.response?.data
         ? err.response.data
         : err.message;
-
     return { success: false, error: message };
   }
 }
 
 export async function assignCourse({ staff_id, course_id }: { staff_id: number; course_id: number }) {
   try {
+    const token = await getAuthToken();
     const resp = await axios.post(
       "http://localhost:3001/course_management/assignCourse",
       {
         staff_id,
         course_id
+      },
+      {
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
       }
     );
-
     console.log(resp);
     return resp.data;
   } catch (err: any) {
@@ -112,32 +149,32 @@ export async function assignCourse({ staff_id, course_id }: { staff_id: number; 
       axios.isAxiosError(err) && err.response?.data
         ? err.response.data
         : err.message;
-
     return { success: false, error: message };
   }
 }
 
-
 export async function getAllCourses(search: string) {
   try {
+    const token = await getAuthToken();
     const resp = await axios.get(
       "http://localhost:3001/course_management/getAllCourses",
       {
         params: {
           search: search
+        },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
         }
       }
     );
-
     console.log(resp);
-
     return resp.data;
   } catch (err: any) {
     const message =
       axios.isAxiosError(err) && err.response?.data
         ? err.response.data
         : err.message;
-
     return { success: false, error: message };
   }
 }

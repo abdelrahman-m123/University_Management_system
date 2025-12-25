@@ -14,7 +14,7 @@ import {
 } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 
-export function DialogCreateCourse(
+export function DialogReviewApplication(
     {handleAccept, handleReject,
       Row}: {handleReject: (number, number)=> void;handleAccept: (number, number)=> void;Row: any;}
 ) {
