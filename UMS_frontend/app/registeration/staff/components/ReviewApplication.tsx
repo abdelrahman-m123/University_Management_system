@@ -22,33 +22,26 @@ export function DialogReviewApplication(
   const [userId, setUserId] = useState<string | null>("");
 
   const handleSubmit = async () => {
-    // TODO: Add course creation logic here
     console.log("Creating course:",  userId, Row.course_id, Row.registered_students );
 
     const res = await handleAccept(Row.course_id, Row.stu_id);
     console.log(res.success);
     if (res.success){
-        // await update();
     setOpen(false);
     }
     
-    // Reset form
     
     
   };
 
   const handleRejectClick = async () => {
-    // TODO: Add course creation logic here
     console.log("Creating course:",  userId, Row.course_id );
 
     const res = await handleReject(Row.course_id, Row.stu_id);
     console.log(res.success);
     if (res.success){
-        // await update();
     setOpen(false);
     }
-    
-    // Reset form
     
     
   };

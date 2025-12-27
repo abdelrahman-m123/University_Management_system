@@ -16,7 +16,6 @@ export function CoursesTable({ initialData }) {
   const [isLoading, setIsLoading] = useState(false);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Add pagination state
   const [currentPage, setCurrentPage] = useState(1);
   const pageSize: number = 5;
   const [totalCount, setTotalCount] = useState(0);
@@ -49,7 +48,6 @@ export function CoursesTable({ initialData }) {
     },
   ];
 
-  // Update fetchData function to include pagination
   const fetchData = async (page: number = 1, search: string = "") => {
     setIsLoading(true);
     try {
@@ -70,12 +68,10 @@ export function CoursesTable({ initialData }) {
     fetchData(1, query);
   };
 
-  // Update updateTable to use pagination
   const updateTable = async (): Promise<void> => {
     fetchData(currentPage, searchQuery);
   };
 
-  // Add page change handler
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     fetchData(page, searchQuery);

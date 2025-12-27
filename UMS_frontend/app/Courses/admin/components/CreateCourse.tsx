@@ -23,7 +23,6 @@ export function DialogCreateCourse(
   const [open, setOpen] = useState(false);
 
   const handleSubmit = async () => {
-    // TODO: Add course creation logic here
     console.log("Creating course:", { courseName, creditHours });
     const res = await addCourse(courseName, creditHours);
     console.log(res.success);
@@ -34,7 +33,6 @@ export function DialogCreateCourse(
     setOpen(false);
     }
     
-    // Reset form
     
   };
 

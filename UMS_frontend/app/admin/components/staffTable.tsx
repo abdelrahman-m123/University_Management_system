@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useRef, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { DataTable } from "@/components/ui/datatable";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -10,9 +11,10 @@ import { getAllStaff, updateStaffRole, deleteStaff } from "../actions";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { DialogAssignCourse } from "./AssignCourse";
 import { DialogEditStaff } from "./EditStaff";
-import { CustomPagination } from "@/components/CustomPagination"; // Add this import
+import { CustomPagination } from "@/components/CustomPagination";
 
 export function StaffTable({ initialData }) {
+  const router = useRouter();
   const [data, setData] = useState(initialData);
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
@@ -39,6 +41,10 @@ export function StaffTable({ initialData }) {
     }
   };
 
+  const handleRowClick = (staffId: number) => {
+    router.push(`/admin/${staffId}`);
+  };
+
   const columns = [
     { accessorKey: "staff_name", header: "Name" },
     { accessorKey: "staff_email", header: "Email" },
@@ -55,14 +61,13 @@ export function StaffTable({ initialData }) {
     { accessorKey: "contact_info", header: "Contact Info" },
   ];
 
-  // Update fetchData function to include pagination
   const fetchData = async (page: number = 1, search: string = "", role: string = "") => {
     setIsLoading(true);
     try {
-      const response = await getAllStaff(search, role, page, pageSize); // Add page and pageSize
+      const response = await getAllStaff(search, role, page, pageSize);
       if (response?.staff) {
         setData(response.staff);
-        setTotalCount(response.totalCount || 0); // Set total count from response
+        setTotalCount(response.totalCount || 0);
       }
     } catch (error) {
       console.error("Search failed:", error);
@@ -72,16 +77,14 @@ export function StaffTable({ initialData }) {
   };
 
   const handleSearch = async (query: string = searchQuery, role: string = roleFilter) => {
-    setCurrentPage(1); // Reset to first page when searching
+    setCurrentPage(1);
     fetchData(1, query, role);
   };
 
-  // Update updateTable to use pagination
   const updateTable = async (): Promise<void> => {
     fetchData(currentPage, searchQuery, roleFilter);
   };
 
-  // Add page change handler
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     fetchData(page, searchQuery, roleFilter);
@@ -116,7 +119,7 @@ export function StaffTable({ initialData }) {
     const value = e;
     const roleValue = value === "any" ? "" : value; 
     setRoleFilter(roleValue);
-    setCurrentPage(1); // Reset to first page when filtering
+    setCurrentPage(1);
     fetchData(1, searchQuery, roleValue);
   };
 
@@ -144,7 +147,7 @@ export function StaffTable({ initialData }) {
       id: "actions",
       header: "Actions",
       cell: ({ row }) => (
-        <div className="flex gap-1 justify-center">
+        <div className="flex gap-1 justify-center" onClick={(e) => e.stopPropagation()}>
           {(row.original.role == "Doctor" || row.original.role == "TA") ? (
             <DialogAssignCourse row={row.original} update={updateTable}></DialogAssignCourse>
           ) : null}
@@ -189,10 +192,13 @@ export function StaffTable({ initialData }) {
             </Select>
           </div>
 
-          <DataTable columns={columnsWithActions} data={data} />
+          <DataTable 
+            columns={columnsWithActions} 
+            data={data}
+            onRowClick={(row) => handleRowClick(row.staff_id)}
+          />
         </div>
         
-        {/* Add CustomPagination component */}
         <div className="mt-4">
           <CustomPagination
             currentPage={currentPage}
@@ -205,4 +211,3 @@ export function StaffTable({ initialData }) {
     </div>
   );
 }
-

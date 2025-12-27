@@ -102,11 +102,16 @@ export async function editStaff(staffData: {
   contact_info?: string;
   profile_link?: string;
   office_hours?: string;
+  rating?: number;
+  numberOfResearchPapers?: number;
+  specialization?: string;
+  remoteWork?: boolean;
 }) {
   try {
+    console.log("Staff data: \n\n",staffData);
     const token = await getAuthToken();
     const resp = await axios.put(
-      "http://localhost:3001/api/auth/editStaff",
+      `http://localhost:3001/Staff_management/editStaff/${staffData.staff_id}`,
       staffData,
       {
         headers: {
@@ -162,6 +167,29 @@ export async function getAllCourses(search: string) {
         params: {
           search: search
         },
+        headers: {
+          'Authorization': `Bearer ${token}`,
+          'Content-Type': 'application/json'
+        }
+      }
+    );
+    console.log(resp);
+    return resp.data;
+  } catch (err: any) {
+    const message =
+      axios.isAxiosError(err) && err.response?.data
+        ? err.response.data
+        : err.message;
+    return { success: false, error: message };
+  }
+}
+
+export async function getStaffById(id: number) {
+  try {
+    const token = await getAuthToken();
+    const resp = await axios.get(
+      `http://localhost:3001/Staff_management/getStaff/${id}`,
+      {
         headers: {
           'Authorization': `Bearer ${token}`,
           'Content-Type': 'application/json'

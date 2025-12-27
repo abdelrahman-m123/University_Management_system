@@ -16,18 +16,15 @@ export function CoursesTable() {
   const [stuId, setStuId] = useState<number | null>(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
-  // Add these pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [pageSize, setPageSize] = useState(5);
   const [totalCount, setTotalCount] = useState(0);
 
-  // Load student ID from localStorage
   useEffect(() => {
     const id = localStorage.getItem("userId");
     if (id) setStuId(Number(id));
   }, []);
 
-  // Update fetchData to use pagination
   const fetchData = async (page: number = currentPage, search: string = "") => {
     if (stuId === null) return;
     
@@ -46,20 +43,17 @@ export function CoursesTable() {
     }
   };
 
-  // Update initial fetch to use fetchData function
   useEffect(() => {
     if (stuId === null) return;
     fetchData(1, "");
   }, [stuId]);
 
-  // Update handleSearch to reset to page 1
   const handleSearch = async (query: string = searchQuery) => {
     if (stuId === null) return;
     setCurrentPage(1); // Reset to page 1 when searching
     fetchData(1, query);
   };
 
-  // Add page change handler
   const handlePageChange = (page: number) => {
     setCurrentPage(page);
     fetchData(page, searchQuery);

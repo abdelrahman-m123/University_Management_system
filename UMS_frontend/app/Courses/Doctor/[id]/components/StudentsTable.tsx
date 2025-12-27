@@ -20,11 +20,12 @@ interface Quiz {
 
 interface StudentsTableProps {
   students: Student[];
+  courseId: string;
   quizzes: Quiz[];
   onGradeUpdate: () => void;
 }
 
-export function StudentsTable({ students, quizzes, onGradeUpdate }: StudentsTableProps) {
+export function StudentsTable({ students,courseId, quizzes, onGradeUpdate }: StudentsTableProps) {
   const [data, setData] = useState<Student[]>(students);
   const [selectedStudent, setSelectedStudent] = useState<Student | null>(null);
   const [gradeDialogOpen, setGradeDialogOpen] = useState(false);
@@ -77,6 +78,7 @@ export function StudentsTable({ students, quizzes, onGradeUpdate }: StudentsTabl
       
       {selectedStudent && (
         <DialogGradeStudent
+          courseId={courseId}
           student={selectedStudent}
           quizzes={quizzes}
           open={gradeDialogOpen}

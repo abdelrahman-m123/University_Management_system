@@ -6,6 +6,7 @@ import { cookies } from "next/headers";
 
 export async function loginUser(email: string, password: string) {
   try {
+    console.log("email and password", { email, password})
     const resp = await axios.post("http://localhost:3001/api/auth/login", {
       email,
       password,

@@ -7,7 +7,7 @@ import { jwtDecode } from "jwt-decode";
 import { loginUser } from "./repositories/actions";
 
 const Login: React.FC = () => {
-  const [email, setEmail] = useState("email@emaill.com");
+  const [email, setEmail] = useState("abdelrahman@university.com");
   const [username, setUsername] = useState("Abdelrahman Mostafa");
   const [password, setPassword] = useState("password");
   const [role, setRole] = useState("student"); // demo purposes
@@ -86,11 +86,11 @@ const Login: React.FC = () => {
             }else if(e.target.value  == "student"){
                 settempRole("Student");
             }else if(e.target.value  == "admin"){
-              setEmail("SuperAdmin@emaill.com");
+              setEmail("admin.one@university.com");
               settempRole("Admin");
             }
             else if(e.target.value  == "Doctor"){
-              setEmail("ahmedmohamed@university.com");
+              setEmail("ahmed.hassan@uni.com");
               settempRole("Doctor");
             }
             else if(e.target.value  == "TA"){

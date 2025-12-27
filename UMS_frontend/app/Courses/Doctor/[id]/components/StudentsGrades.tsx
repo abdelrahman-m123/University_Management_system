@@ -15,9 +15,10 @@ interface StudentGrade {
 
 interface StudentGradesTableProps {
   grades: StudentGrade[];
+  courseId: string;
 }
 
-export function StudentGradesTable({ grades }: StudentGradesTableProps) {
+export function StudentGradesTable({ grades, courseId }: StudentGradesTableProps) {
   const [data, setData] = useState<StudentGrade[]>(grades);
 
   useEffect(() => {
