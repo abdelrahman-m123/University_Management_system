@@ -54,7 +54,7 @@ export async function updateStaffRole(staffId: string, newRole: string) {
 export async function deleteStaff(staffId: string) {
   try {
     const token = await getAuthToken();
-    const response = await fetch(`http://localhost:3001/api/staff/${staffId}`, {
+    const response = await fetch(`http://localhost:3001/Staff_management/deleteStaff/${staffId}`, {
       method: 'DELETE',
       headers: {
         'Authorization': `Bearer ${token}`

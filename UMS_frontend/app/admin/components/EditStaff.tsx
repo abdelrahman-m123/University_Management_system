@@ -15,6 +15,9 @@ import {
 import { Input } from "@/components/ui/input";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { editStaff } from "../actions";
+import { 
+  Pencil, 
+} from "lucide-react";
 
 interface Staff {
   staff_id: number;
@@ -87,7 +90,7 @@ export function DialogEditStaff({ row, update }: DialogEditStaffProps) {
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          Edit
+          <Pencil></Pencil>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">

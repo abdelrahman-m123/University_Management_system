@@ -118,7 +118,7 @@ export function DialogCreateStaff(
             </Select>
           </div>
           
-          <div className="grid gap-2">
+          {/* <div className="grid gap-2">
             <label htmlFor="phone">Phone (Optional)</label>
             <Input
               id="phone"
@@ -126,9 +126,9 @@ export function DialogCreateStaff(
               value={phone}
               onChange={(e) => setPhone(e.target.value)}
             />
-          </div>
+          </div> */}
           
-          <div className="grid gap-2">
+          {/* <div className="grid gap-2">
             <label htmlFor="contact-info">Contact Info (Optional)</label>
             <Input
               id="contact-info"
@@ -136,7 +136,7 @@ export function DialogCreateStaff(
               value={contactInfo}
               onChange={(e) => setContactInfo(e.target.value)}
             />
-          </div>
+          </div> */}
           
           {/* <div className="grid gap-2">
             <label htmlFor="office-hours">Office Hours (Optional)</label>

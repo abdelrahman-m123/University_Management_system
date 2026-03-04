@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import Sidebar from "@/components/sidebar";
 import { getAllCourses } from "../actions";
 import { DialogCreateCourse } from "./RegisterCourse";
-import { CustomPagination } from "@/components/CustomPagination"; // Add this import
+import { CustomPagination } from "@/components/CustomPagination"; 
 
 export function CoursesTable() {
   const [data, setData] = useState([]);

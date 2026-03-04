@@ -12,6 +12,19 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { DialogAssignCourse } from "./AssignCourse";
 import { DialogEditStaff } from "./EditStaff";
 import { CustomPagination } from "@/components/CustomPagination";
+import {
+  Dialog,
+  DialogClose,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { 
+  Trash2, 
+} from "lucide-react";
 
 export function StaffTable({ initialData }) {
   const router = useRouter();
@@ -19,6 +32,8 @@ export function StaffTable({ initialData }) {
   const [searchQuery, setSearchQuery] = useState("");
   const [roleFilter, setRoleFilter] = useState("");
   const [isLoading, setIsLoading] = useState(false);
+  const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [staffToDelete, setStaffToDelete] = useState(null);
   const timeoutRef = useRef<NodeJS.Timeout | null>(null);
   
   // pagination state
@@ -43,6 +58,24 @@ export function StaffTable({ initialData }) {
 
   const handleRowClick = (staffId: number) => {
     router.push(`/admin/${staffId}`);
+  };
+
+  const handleDeleteClick = (staff: any, e: React.MouseEvent) => {
+    e.stopPropagation();
+    setStaffToDelete(staff);
+    setDeleteDialogOpen(true);
+  };
+
+  const handleDeleteConfirm = async () => {
+    if (staffToDelete) {
+      const res = await deleteStaff(staffToDelete.staff_id);
+      console.log(staffToDelete.staff_id);
+      if (res.success) {
+        setDeleteDialogOpen(false);
+        setStaffToDelete(null);
+        await updateTable();
+      }
+    }
   };
 
   const columns = [
@@ -96,12 +129,6 @@ export function StaffTable({ initialData }) {
     return res;
   };
 
-  const handleDeleteStaff = async (staffId: number) => {
-    const res = await deleteStaff(staffId);
-    await updateTable();
-    return res;
-  };
-
   const handleInputChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const value = e.target.value;
     setSearchQuery(value);
@@ -149,9 +176,16 @@ export function StaffTable({ initialData }) {
       cell: ({ row }) => (
         <div className="flex gap-1 justify-center" onClick={(e) => e.stopPropagation()}>
           {(row.original.role == "Doctor" || row.original.role == "TA") ? (
-            <DialogAssignCourse row={row.original} update={updateTable}></DialogAssignCourse>
+            <DialogAssignCourse row={row.original} update={updateTable} />
           ) : null}
-          <DialogEditStaff row={row.original} update={updateTable}></DialogEditStaff>
+          <DialogEditStaff row={row.original} update={updateTable} />
+          <Button 
+            variant="outline" 
+            size="sm"
+            onClick={(e) => handleDeleteClick(row.original, e)}
+          >
+            <Trash2></Trash2>
+          </Button>
         </div>
       ),
     },
@@ -208,6 +242,28 @@ export function StaffTable({ initialData }) {
           />
         </div>
       </div>
+
+      {/* Delete Confirmation Dialog */}
+      <Dialog open={deleteDialogOpen} onOpenChange={setDeleteDialogOpen}>
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle>Confirm Delete</DialogTitle>
+            <DialogDescription>
+              Are you sure you want to delete {staffToDelete?.staff_name}? This action cannot be undone.
+            </DialogDescription>
+          </DialogHeader>
+          <DialogFooter className="sm:justify-end gap-2">
+            <DialogClose asChild>
+              <Button type="button" variant="secondary">
+                Cancel
+              </Button>
+            </DialogClose>
+            <Button type="button" variant="destructive" onClick={handleDeleteConfirm}>
+              Delete
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
     </div>
   );
 }

@@ -49,9 +49,6 @@ export function DialogCreateCourse(
       <DialogContent className="sm:max-w-md">
         <DialogHeader>
           <DialogTitle>Register {Row.course_name}</DialogTitle>
-          <DialogDescription>
-            {Row.max_registered_students - Row.registered_students} spots left.
-          </DialogDescription>
         </DialogHeader>
         
         <DialogFooter className="sm:justify-end gap-2">

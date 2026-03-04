@@ -7,7 +7,7 @@ import { Input } from "@/components/ui/input";
 import { DialogCreateCourse } from "./CreateCourse";
 import Sidebar from "@/components/sidebar";
 import { getAllCourses, removeCourse } from "../actions";
-import { CustomPagination } from "@/components/CustomPagination"; // Add this import
+import { CustomPagination } from "@/components/CustomPagination";
 
 export function CoursesTable({ initialData, columns }) {
   const [data, setData] = useState(initialData);
@@ -39,7 +39,7 @@ export function CoursesTable({ initialData, columns }) {
     fetchData(1, query);
   };
 
-  // Update updateTable to use pagination
+
   const updateTable = async (): Promise<void> => {
     fetchData(currentPage, searchQuery);
   };

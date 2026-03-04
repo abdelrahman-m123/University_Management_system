@@ -36,7 +36,7 @@ interface Quiz {
 interface DialogGradeStudentProps {
   student: Student;
   quizzes: Quiz[];
-  courseId: number; // Add courseId prop
+  courseId: number; 
   open: boolean;
   onOpenChange: (open: boolean) => void;
   onSubmit: () => void;

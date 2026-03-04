@@ -1,4 +1,4 @@
-// pages/dashboard.tsx
+
 import ProtectedRoute from "../../components/ProtectedRoutes";
 import Sidebar from "../../components/sidebar";
 

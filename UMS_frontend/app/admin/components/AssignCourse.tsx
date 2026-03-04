@@ -14,6 +14,14 @@ import {
 } from "@/components/ui/dialog"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
 import { assignCourse, getAllCourses } from "../actions";
+import { 
+  Pencil, 
+  Trash2, 
+  BookOpen, 
+  MoreHorizontal,
+  Eye,
+  UserCog
+} from "lucide-react";
 
 interface Course {
   course_id: number;
@@ -90,7 +98,7 @@ export function DialogAssignCourse({ row, update }: DialogAssignCourseProps) {
     <Dialog open={open} onOpenChange={handleOpenChange}>
       <DialogTrigger asChild>
         <Button variant="outline" size="sm">
-          Assign Course
+          <BookOpen></BookOpen>
         </Button>
       </DialogTrigger>
       <DialogContent className="sm:max-w-md">
