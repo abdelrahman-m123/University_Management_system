@@ -1,222 +1,183 @@
 # University Management System
 
-A full-stack university management platform built with **Next.js**, featuring a role-based experience for Admins, Doctors, Teaching Assistants, and Students. The system streamlines course management, student registration, quizzes, grading, and staff administration — all within a clean, modern UI.
+A full-stack university management platform for academic staff and students. The system combines role-based course administration, academic calendar management, registration workflows, assessments, announcements, and realtime enrollment updates in one Next.js and ASP.NET Core application.
 
----
+## Highlights
 
-## Tech Stack
-
-- **Framework:** Next.js (App Router)
-- **UI Components:** [shadcn/ui](https://ui.shadcn.com/)
-- **Auth & Roles:** Role-based access control through JWT (Admin / Doctor / TA / Student)
-
----
-
-## Key Features
-
-### Role-Based Sidebar Navigation
-Every user sees a tailored sidebar based on their role — Admins get management tools, Doctors and TAs get course controls, and Students get their learning dashboard. No clutter, no confusion.
-
-### Staff Management (Admin)
-Full CRUD over staff members with role assignment and course linking — searchable by email and filterable by role for fast lookups.
-
-### Smart Course Applications
-Admins can review, accept, or reject student course applications with an email-based search, making enrollment management effortless.
-
-### In-Course Assessment Suite (Doctor / TA)
-Instructors can create quizzes and questionnaires, publish them on their own schedule, and grade students both per-quiz and holistically — all from within the individual course page.
-
-### Announcements & Interaction
-Doctors/TAs publish announcements; students can read and comment on them — fostering communication without leaving the platform.
-
-### Student Quiz Calendar
-Students see all their upcoming quizzes in a calendar view alongside their registered courses, helping them stay on top of deadlines.
-
-### Server Actions
-All client–server communication is handled via Next.js Server Actions (BFF) for added security.
-
----
+- **Role-based workspaces** for Admins, Doctors, Teaching Assistants, and Students.
+- **Academic calendar management** for academic years, semesters, registration windows, add/drop dates, publication controls, and course offerings.
+- **Course registration** with search, semester filtering, application status, and capacity-aware enrollment.
+- **Realtime waitlist updates** using SignalR. Students can see enrollment changes without refreshing the page when a seat becomes available.
+- **Background waitlist promotion** in ASP.NET Core. A hosted worker promotes the next eligible student when capacity opens, while an outbox worker publishes reliable realtime events.
+- **Interactive API documentation** through Swagger UI with an OpenAPI v3 contract and JWT bearer authorization support.
+- **Assessment tools** for quizzes, questionnaires, grading, due dates, and student feedback.
+- **Announcements and comments** inside course pages.
+- **Server Actions** in the frontend BFF layer for authenticated client-to-server operations.
 
 ## Screenshots
 
-### Admin Panel
+The screenshots below show the current application UI and seeded local demo data.
 
-#### Staff Management
-<!-- Screenshot: Staff management page with role filter and email search -->
-![alt text](./screenshots/image.png)
----
+### Student course dashboard
 
-#### Individual Staff Profile
-<!-- Screenshot: Staff profile with personal info, assigned courses, and performance metrics -->
-![App Demo](./screenshots/staffPage.gif)
----
+Registered courses, semester status, and the quiz calendar are grouped into the same student workspace.
 
-#### Course Applications
-<!-- Screenshot: Course applications review page -->
-![alt text](./screenshots/image-2.png)
----
+![Student course dashboard](./screenshots/student-courses.png)
 
-#### Course Management
-<!-- Screenshot: Course management page -->
-![alt text](./screenshots/image-3.png)
----
+### Course registration and live updates
 
-### Doctor / TA Panel
+Students can search the catalogue, select a semester, and see the realtime connection state alongside enrollment status.
 
-#### Assigned Courses
-<!-- Screenshot: List of assigned courses for doctor/TA -->
-![alt text](./screenshots/image-4.png)
----
+![Course registration](./screenshots/course-registration.png)
 
-#### Individual Course Page
-<!-- Screenshot: Course detail page with quiz creation, grading, and announcement tools -->
+### Course detail and collaboration
 
-![App Demo](./screenshots/doctor'sCoursePage.gif)
----
+Course announcements, questionnaires, grades, staff information, and comments live under one course page.
 
-### Student Panel
+![Course detail](./screenshots/course-detail.png)
 
-#### My Courses & Quiz Calendar
-<!-- Screenshot: Student courses list alongside quiz calendar -->
-![App Demo](./screenshots/studentCourses.gif)
+### Academic calendar administration
 
----
+The calendar uses compact tabs for academic years, semesters, and offerings. Semester cards separate term dates, Cairo registration windows, and add/drop windows so the important dates can be scanned quickly.
 
-#### Course Registration
-<!-- Screenshot: Course search and application page -->
-![App Demo](./screenshots/studentReg.gif)
----
+![Academic calendar](./screenshots/academic-calendar.png)
 
-#### Individual Course Page (Student View)
-<!-- Screenshot: Student view of course with announcements, quizzes, and grades -->
-![App Demo](./screenshots/studentCourse.gif)
+### Swagger API documentation
 
+Swagger groups the REST endpoints by controller, shows request and response schemas, and provides an **Authorize** control for testing protected endpoints with a JWT.
 
----
+![Swagger UI](./screenshots/swagger-ui.png)
 
-## Project Structure
+## Technology
 
+### Frontend
+
+- Next.js 16 App Router
+- TypeScript
+- Tailwind CSS
+- Radix/shadcn UI primitives
+- `@microsoft/signalr` for realtime enrollment updates
+- Server Actions for the frontend BFF layer
+
+### Backend
+
+- ASP.NET Core Web API
+- Entity Framework Core with SQL Server
+- JWT authentication and role-based authorization
+- Swagger UI and an OpenAPI v3 endpoint for interactive API exploration
+- SignalR hub for enrollment events
+- Hosted background workers for waitlist promotion and outbox delivery
+- Database migrations for academic calendar, offerings, waitlists, and outbox messages
+
+## Project structure
+
+```text
+frontend/
+  app/                  Next.js routes, pages, actions, and UI
+  components/           Shared layout and UI primitives
+  public/               Static frontend assets
+
+UMS.Api/
+  Controllers/          HTTP API endpoints
+  Hubs/                 SignalR hubs
+  Models/               EF Core entities and enums
+  Services/             Enrollment, calendar, token, and worker services
+  Data/                 DbContext and demo seeding
+  Migrations/           EF Core migrations
+
+screenshots/            Current README screenshots
+docker-compose.yml      SQL Server, API, and frontend development stack
 ```
 
-[app]
-    ├── [admin]
-        ├── actions.ts
-        ├── [components]
-            ├── AssignCourse.tsx
-            ├── CreateStaff.tsx
-            ├── EditStaff.tsx
-            └── staffTable.tsx
-        ├── page.tsx
-        └── [[id]]
-            ├── [components]
-                └── EditStaff.tsx
-            └── page.tsx
-    ├── [Courses]
-        ├── [admin]
-            ├── actions.ts
-            ├── [components]
-                ├── CourseTable.tsx
-                └── CreateCourse.tsx
-            └── page.tsx
-        ├── [Doctor]
-            ├── actions.tsx
-            ├── page.tsx
-            └── [[id]]
-                ├── [components]
-                    ├── ClassworkGradesTable.tsx
-                    ├── CreateAnnoucment.tsx
-                    ├── CreateQuestionaire.tsx
-                    ├── CreateQuiz.tsx
-                    ├── DialogSetQuizDueDate.tsx
-                    ├── EditAnnouncement.tsx
-                    ├── GradeStudent.tsx
-                    ├── StudentsGrades.tsx
-                    └── StudentsTable.tsx
-                └── page.tsx
-        └── [student]
-            ├── actions.tsx
-            ├── page.tsx
-            └── [[id]]
-                ├── [components]
-                    └── EditComment.tsx
-                └── page.tsx
-    ├── [dashboard]
-        └── page.tsx
-    ├── favicon.ico
-    ├── globals.css
-    ├── layout.tsx
-    ├── [lib]
-        └── utils.tsx
-    ├── [login]
-        ├── page.tsx
-        └── [repositories]
-            └── actions.ts
-    ├── page.tsx
-    ├── [registeration]
-        ├── [staff]
-            ├── actions.ts
-            ├── [components]
-                ├── CourseTable.tsx
-                └── ReviewApplication.tsx
-            └── page.tsx
-        └── [student]
-            ├── actions.ts
-            ├── [components]
-                ├── CourseTable.tsx
-                └── RegisterCourse.tsx
-            └── page.tsx
-    ├── [staff]
-        └── page.tsx
-    └── [student]
-        └── page.tsx
-[common]
-    └── cookieHelpers.ts
-[components]
-    ├── CustomPagination.tsx
-    ├── ProtectedRoutes.tsx
-    ├── sidebar.tsx
-    └── [ui]
-        ├── button.tsx
-        ├── datatable.tsx
-        ├── dialog.tsx
-        ├── input.tsx
-        ├── pagination.tsx
-        ├── select.tsx
-        ├── switch.tsx
-        ├── table.tsx
-        └── tabs.tsx
-```
+## Backend API documentation
 
----
+When the API runs with `ASPNETCORE_ENVIRONMENT=Development`, the documentation endpoints are available at:
 
-## Getting Started
+| Resource | URL | Purpose |
+| --- | --- | --- |
+| Swagger UI | [http://localhost:5219/swagger](http://localhost:5219/swagger) | Browse endpoints, inspect schemas, and send test requests |
+| Swagger JSON | [http://localhost:5219/swagger/v1/swagger.json](http://localhost:5219/swagger/v1/swagger.json) | OpenAPI v3 contract generated by Swagger |
+| OpenAPI JSON | [http://localhost:5219/openapi/v1.json](http://localhost:5219/openapi/v1.json) | ASP.NET Core's built-in OpenAPI document |
+
+Swagger uses the same controllers and DTOs as the application. It covers the following API areas:
+
+| Area | Base route | Examples |
+| --- | --- | --- |
+| Authentication | `/api/auth` | Log in and create users |
+| Academic calendar | `/api/academic-years`, `/api/semesters`, `/api/offerings` | Manage years, terms, dates, and course offerings |
+| Courses and staff | `/api/courses`, `/api/staff`, `/api/staff-courses`, `/api/students` | Manage courses, profiles, and teaching assignments |
+| Enrollment | `/api/enrollments` | Register, review, withdraw, join a waitlist, and leave a waitlist |
+| Course delivery | `/api/announcements`, `/api/quizzes`, `/api/questionnaires`, `/api/course-contents` | Deliver learning material and assessments |
+| System health | `/api/health` | Check API availability |
+
+### Authenticate in Swagger
+
+1. Call `POST /api/auth/login` with a development account to receive an access token.
+2. Select **Authorize** at the top of Swagger UI.
+3. Paste the token as `Bearer {token}`.
+4. Swagger includes the authorization header in subsequent protected requests.
+
+The Swagger UI is enabled only in the Development environment. Production deployments should expose API documentation through an authenticated internal route or a separately published API portal.
+
+## Run locally
 
 ### Prerequisites
-- Node.js 18+
-- npm / yarn / pnpm
 
-### Installation
+- Docker Desktop
+- Node.js 18 or newer (for frontend-only work)
+- .NET 8 SDK (for backend-only work)
+
+### Start the full stack
 
 ```bash
+docker compose up --build
+```
 
-# Install dependencies
+The services are available at:
+
+- Frontend: [http://localhost:3000](http://localhost:3000)
+- API: [http://localhost:5219](http://localhost:5219)
+- SQL Server: `localhost:14333`
+
+The API applies migrations and seeds demo data on startup. The seeded demo accounts use the password `password` in the local development environment.
+
+### Run the frontend without Docker
+
+```bash
+cd frontend
 npm install
-
-# Run the development server
 npm run dev
 ```
 
-Open [http://localhost:3000](http://localhost:3000) in your browser.
+## Realtime enrollment flow
 
----
+1. A student registers for a full course and is placed on the waitlist when capacity is reached.
+2. The enrollment service stores the waitlist position and writes an outbox message in the same database transaction.
+3. The `WaitlistPromotionWorker` periodically checks published offerings during registration or add/drop windows.
+4. When a seat opens, the worker promotes the next waitlisted enrollment.
+5. The `EnrollmentOutboxWorker` delivers the event through `EnrollmentHub`.
+6. The student’s Next.js page receives the SignalR event and updates the visible status without a full-page reload.
 
-## User Roles
+This keeps the UI responsive while giving the backend a reliable place to handle retries, ordering, and capacity checks.
 
-| Role | Capabilities |
-|------|-------------|
-| **Admin** | Manage staff, assign courses, review applications, create/remove courses |
-| **Doctor** | View assigned courses, create quizzes & questionnaires, grade students, post announcements |
-| **Teaching Assistant (TA)** | Same as Doctor — scoped to assigned courses |
-| **Student** | Register for courses, take quizzes & questionnaires, view grades, comment on announcements |
+## User roles
 
----
+| Role | Main capabilities |
+| --- | --- |
+| **Admin** | Manage staff, courses, academic years, semesters, offerings, and publication state |
+| **Doctor** | Manage assigned courses, announcements, quizzes, questionnaires, and grades |
+| **Teaching Assistant** | Support assigned courses, assessments, announcements, and grading workflows |
+| **Student** | Browse offerings, register or join waitlists, view courses, complete assessments, and comment on announcements |
+
+## Development checks
+
+```bash
+# Frontend lint
+cd frontend
+npm run lint
+
+# Backend build
+dotnet build ../UMS.Api/UMS.Api.csproj --no-restore
+```
+
+The repository may contain unrelated legacy TypeScript diagnostics outside the files being changed. The commands above are the targeted checks used for the current frontend and backend work.
