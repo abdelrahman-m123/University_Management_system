@@ -1,0 +1,10 @@
+FROM mcr.microsoft.com/dotnet/sdk:9.0
+
+WORKDIR /src/UMS.Api
+
+COPY UMS.Api/UMS.Api.csproj ./
+RUN dotnet restore UMS.Api.csproj
+
+EXPOSE 8080
+
+CMD ["dotnet", "watch", "--project", "UMS.Api.csproj", "run", "--urls", "http://0.0.0.0:8080"]
