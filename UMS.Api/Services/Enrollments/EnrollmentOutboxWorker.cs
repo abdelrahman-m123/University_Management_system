@@ -14,7 +14,7 @@ public sealed class EnrollmentOutboxWorker(IServiceScopeFactory scopeFactory, IH
         {
             try
             {
-                using var scope = scopeFactory.CreateScope();
+                using var scope = scopeFactory.CreateScope(); 
                 var db = scope.ServiceProvider.GetRequiredService<ApplicationDbContext>();
                 var messages = await db.OutboxMessages.Where(item => item.ProcessedAt == null).OrderBy(item => item.CreatedAt).Take(50).ToListAsync(stoppingToken);
                 foreach (var message in messages)

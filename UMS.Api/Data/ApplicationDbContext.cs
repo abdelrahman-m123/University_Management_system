@@ -24,6 +24,8 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
     public DbSet<Questionnaire> Questionnaires => Set<Questionnaire>();
     public DbSet<QuestionnaireQuestion> QuestionnaireQuestions => Set<QuestionnaireQuestion>();
     public DbSet<OutboxMessage> OutboxMessages => Set<OutboxMessage>();
+    public DbSet<Chat> Chats => Set<Chat>();
+    public DbSet<Message> Messages => Set<Message>();
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -152,6 +154,44 @@ public class ApplicationDbContext(DbContextOptions<ApplicationDbContext> options
             entity.HasKey(message => message.Id);
             entity.Property(message => message.Type).HasMaxLength(100);
             entity.HasIndex(message => new { message.ProcessedAt, message.CreatedAt });
+        });
+
+        modelBuilder.Entity<Chat>(entity =>
+        {
+            entity.HasKey(chat => chat.Id);
+            entity.HasIndex(chat => new { chat.DoctorId, chat.StudentId }).IsUnique();
+
+            entity
+                .HasOne(chat => chat.Doctor)
+                .WithMany()
+                .HasForeignKey(chat => chat.DoctorId)
+                .OnDelete(DeleteBehavior.Restrict);
+
+            entity
+                .HasOne(chat => chat.Student)
+                .WithMany()
+                .HasForeignKey(chat => chat.StudentId)
+                .OnDelete(DeleteBehavior.Restrict);
+        });
+
+        modelBuilder.Entity<Message>(entity =>
+        {
+            entity.HasKey(message => message.Id);
+            entity.Property(message => message.Content).HasMaxLength(2000);
+            entity.HasIndex(message => new { message.ChatId, message.SentAt });
+            entity.HasIndex(message => new { message.ChatId, message.ReadAt });
+
+            entity
+                .HasOne(message => message.Chat)
+                .WithMany(chat => chat.Messages)
+                .HasForeignKey(message => message.ChatId)
+                .OnDelete(DeleteBehavior.Cascade);
+
+            entity
+                .HasOne(message => message.Sender)
+                .WithMany()
+                .HasForeignKey(message => message.SenderId)
+                .OnDelete(DeleteBehavior.Restrict);
         });
 
         modelBuilder.Entity<CourseContent>(entity =>

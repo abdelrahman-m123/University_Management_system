@@ -6,6 +6,7 @@ using Microsoft.IdentityModel.Tokens;
 using Microsoft.OpenApi.Models;
 using UMS.Api.Data;
 using UMS.Api.Repositories.Announcements;
+using UMS.Api.Repositories.Chat;
 using UMS.Api.Repositories.Comments;
 using UMS.Api.Repositories.Common;
 using UMS.Api.Repositories.CourseContents;
@@ -22,6 +23,7 @@ using UMS.Api.Repositories.StudentProfiles;
 using UMS.Api.Repositories.Users;
 using UMS.Api.Services.Announcements;
 using UMS.Api.Services.Auth;
+using UMS.Api.Services.Chat;
 using UMS.Api.Services.Courses;
 using UMS.Api.Services.CourseContents;
 using UMS.Api.Services.CurrentUser;
@@ -103,11 +105,13 @@ builder.Services.AddScoped<IQuizRepository, QuizRepository>();
 builder.Services.AddScoped<IQuizGradeRepository, QuizGradeRepository>();
 builder.Services.AddScoped<IStaffCourseRepository, StaffCourseRepository>();
 builder.Services.AddScoped<IAnnouncementRepository, AnnouncementRepository>();
+builder.Services.AddScoped<IChatRepository, ChatRepository>();
 builder.Services.AddScoped<ICommentRepository, CommentRepository>();
 builder.Services.AddScoped<IQuestionnaireRepository, QuestionnaireRepository>();
 builder.Services.AddScoped<IQuestionnaireQuestionRepository, QuestionnaireQuestionRepository>();
 builder.Services.AddScoped<IUnitOfWork, UnitOfWork>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddScoped<IChatService, ChatService>();
 builder.Services.AddScoped<IStudentService, StudentService>();
 builder.Services.AddScoped<IStaffService, StaffService>();
 builder.Services.AddScoped<IStaffCourseService, StaffCourseService>();
@@ -144,7 +148,12 @@ builder.Services
             OnMessageReceived = context =>
             {
                 var token = context.Request.Query["access_token"];
-                if (!string.IsNullOrEmpty(token) && context.HttpContext.Request.Path.StartsWithSegments("/hubs/enrollment")) context.Token = token;
+                if (!string.IsNullOrEmpty(token) &&
+                    (context.HttpContext.Request.Path.StartsWithSegments("/hubs/enrollment") ||
+                     context.HttpContext.Request.Path.StartsWithSegments("/hubs/chat")))
+                {
+                    context.Token = token;
+                }
                 return Task.CompletedTask;
             }
         };
@@ -197,5 +206,6 @@ app.UseAuthentication();
 app.UseAuthorization();
 app.MapControllers();
 app.MapHub<UMS.Api.Hubs.EnrollmentHub>("/hubs/enrollment");
+app.MapHub<UMS.Api.Hubs.ChatHub>("/hubs/chat");
 
 app.Run();

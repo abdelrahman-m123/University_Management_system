@@ -22,6 +22,8 @@ public static class DbSeeder
             user => user.StudentProfile = UpdateStudentProfile(user.StudentProfile, 2.10m, true, "Campus Dorms", false));
         await EnsureDemoUserAsync(db, "Nour El-Din", "nour.eldin@university.com", "+20 100 111 2204", passwordHash, studentRole,
             user => user.StudentProfile = UpdateStudentProfile(user.StudentProfile, 3.05m, false, "Family Housing", false));
+        await EnsureDemoUserAsync(db, "Registration Tester", "registration.tester@university.com", "+20 100 111 2205", passwordHash, studentRole,
+            user => user.StudentProfile = UpdateStudentProfile(user.StudentProfile, 3.25m, false, "Off Campus", false));
 
         await EnsureDemoUserAsync(db, "Dr. Ahmed Hassan", "ahmed.hassan@uni.com", "+20 100 222 3301", passwordHash, doctorRole,
             user => user.StaffProfile = UpdateStaffProfile(user.StaffProfile, "Computer Science", "Building A, Room 102", 18, 43, false));
@@ -157,6 +159,7 @@ public static class DbSeeder
         await EnsureEnrollmentAsync(db, users, offeringMap, "nour.eldin@university.com", "DB301", EnrollmentStatus.Accepted, 23, 17, 8, 33, "B+");
         await EnsureEnrollmentAsync(db, users, offeringMap, "nour.eldin@university.com", "WEB220", EnrollmentStatus.Accepted, 27, 18, 10, 37, "A");
         await EnsureEnrollmentAsync(db, users, offeringMap, "nour.eldin@university.com", "MOB250", EnrollmentStatus.Withdrawn, null, null, null, null, null);
+        await EnsureEnrollmentAsync(db, users, offeringMap, "registration.tester@university.com", "CS101", EnrollmentStatus.Accepted, null, null, null, null, null);
 
         await db.SaveChangesAsync();
 

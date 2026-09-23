@@ -11,6 +11,14 @@ public class UserRepository(ApplicationDbContext db) : IUserRepository
         return db.Users.SingleOrDefaultAsync(user => user.Id == id);
     }
 
+    public Task<User?> GetByIdWithRolesAsync(int id)
+    {
+        return db.Users
+            .Include(user => user.UserRoles)
+            .ThenInclude(userRole => userRole.Role)
+            .SingleOrDefaultAsync(user => user.Id == id);
+    }
+
     public Task<User?> GetByEmailWithRolesAsync(string email)
     {
         return db.Users
