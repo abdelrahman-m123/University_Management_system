@@ -109,16 +109,15 @@ export function CoursesTable({ initialData, columns }) {
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="min-w-0 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
         <PageHeader
           title="Course Management"
           description="Manage all university courses"
-          actions={<DialogCreateCourse update={updateTable} />}
         />
-        <div>
+        <div className="mx-auto max-w-7xl space-y-4">
           {/* Filters */}
-          <div className="flex flex-wrap gap-3 px-6 py-4 border-b border-slate-100 bg-slate-50/50">
-            <div className="flex w-full max-w-md items-center gap-2">
+          <div className="flex flex-wrap items-center gap-3 p-4">
+            <div className="flex min-w-0 w-full max-w-md items-center gap-2">
               <Input
                 placeholder="Search courses..."
                 value={searchQuery}
@@ -126,22 +125,21 @@ export function CoursesTable({ initialData, columns }) {
                 onKeyPress={handleKeyPress}
               />
             </div>
+            <div className="ml-auto">
+              <DialogCreateCourse update={updateTable} />
+            </div>
           </div>
 
           {/* Table */}
-          <div className="p-6">
-            <DataTable columns={columnsWithActions} data={data} />
-          </div>
+          <DataTable columns={columnsWithActions} data={data} />
           
           {/* Pagination */}
-          <div className="px-6 pb-6">
-            <CustomPagination
-              currentPage={currentPage}
-              pageSize={pageSize}
-              totalItems={totalCount}
-              onPageChange={handlePageChange}
-            />
-          </div>
+          <CustomPagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalCount}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>

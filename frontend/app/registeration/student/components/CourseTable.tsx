@@ -169,10 +169,10 @@ export function CoursesTable() {
           title="Course Registration"
           description={<span>Browse available courses and track your applications · <span className={liveStatus === "live" ? "text-emerald-600" : "text-slate-400"}>{liveStatus === "live" ? "Live updates on" : "Live updates unavailable"}</span></span>}
         />
-        <div className="mx-auto max-w-7xl pt-6">
+        <div className="mx-auto max-w-7xl pt-4">
           <div className="space-y-4">
 
-          <div className="mb-4 flex w-full flex-col gap-3 sm:flex-row">
+          <div className="flex w-full flex-col gap-3 p-4 sm:flex-row">
             <Input
               aria-label="Search courses"
               className="min-w-0 flex-1"
@@ -197,7 +197,7 @@ export function CoursesTable() {
           <DataTable columns={columnsWithActions} data={data} />
         </div>
         
-        <div className="mt-4">
+        <div>
           <CustomPagination
             currentPage={currentPage}
             pageSize={pageSize}

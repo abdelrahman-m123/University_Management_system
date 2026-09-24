@@ -147,19 +147,19 @@ export function CoursesTable({ initialData }: { initialData: ApplicationRow[] })
   return (
     <div className="flex min-h-screen bg-slate-50">
       <Sidebar />
-      <div className="flex-1 p-8 overflow-auto">
+      <div className="min-w-0 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
         <PageHeader
           title="Course Applications"
           description="Review and manage student course registration requests"
         />
-        <div>
+        <div className="mx-auto max-w-7xl space-y-4">
           {/* Filters */}
-          <div className="flex flex-wrap gap-3 px-6 py-4 border-b border-slate-100 bg-slate-50/50">
+          <div className="flex flex-wrap items-center gap-3 p-4">
             <Select value={semesterId || "all"} onValueChange={(value) => setSemesterId(value === "all" ? "" : value)}>
-              <SelectTrigger className="w-64"><SelectValue placeholder="All semesters" /></SelectTrigger>
+              <SelectTrigger className="w-full sm:w-64"><SelectValue placeholder="All semesters" /></SelectTrigger>
               <SelectContent><SelectItem value="all">All semesters</SelectItem>{semesters.map((semester) => <SelectItem key={semester.id} value={String(semester.id)}>{semester.academicYearName} {semester.name}</SelectItem>)}</SelectContent>
             </Select>
-            <div className="flex w-full max-w-md items-center gap-2">
+            <div className="flex min-w-0 w-full max-w-md items-center gap-2">
               <Input
                 placeholder="Search applications..."
                 value={searchQuery}
@@ -170,19 +170,15 @@ export function CoursesTable({ initialData }: { initialData: ApplicationRow[] })
           </div>
 
           {/* Table */}
-          <div className="p-6">
-            <DataTable columns={columnsWithActions} data={data} />
-          </div>
+          <DataTable columns={columnsWithActions} data={data} />
           
           {/* Pagination */}
-          <div className="px-6 pb-6">
-            <CustomPagination
-              currentPage={currentPage}
-              pageSize={pageSize}
-              totalItems={totalCount}
-              onPageChange={handlePageChange}
-            />
-          </div>
+          <CustomPagination
+            currentPage={currentPage}
+            pageSize={pageSize}
+            totalItems={totalCount}
+            onPageChange={handlePageChange}
+          />
         </div>
       </div>
     </div>

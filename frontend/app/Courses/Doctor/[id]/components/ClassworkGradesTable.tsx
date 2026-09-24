@@ -1,9 +1,10 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useEffect, useMemo, useState } from "react";
 import type { ColumnDef } from "@tanstack/react-table";
 import { DataTable } from "@/components/ui/datatable";
-import { Button } from "@/components/ui/button";
+import { CustomPagination } from "@/components/CustomPagination";
+import { Input } from "@/components/ui/input";
 
 interface ClassworkGrade {
   stu_id: number;
@@ -24,10 +25,30 @@ interface ClassworkGradesTableProps {
 
 export function ClassworkGradesTable({ classworkGrades, courseId }: ClassworkGradesTableProps) {
   const [data, setData] = useState<ClassworkGrade[]>(classworkGrades);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [currentPage, setCurrentPage] = useState(1);
+  const pageSize = 8;
 
   useEffect(() => {
     setData(classworkGrades);
   }, [classworkGrades]);
+
+  const filteredData = useMemo(() => {
+    const query = searchQuery.trim().toLowerCase();
+    if (!query) return data;
+
+    return data.filter((student) =>
+      [student.stu_name, student.stu_email]
+        .some((value) => value.toLowerCase().includes(query)),
+    );
+  }, [data, searchQuery]);
+
+  const totalPages = Math.max(1, Math.ceil(filteredData.length / pageSize));
+  const visiblePage = Math.min(currentPage, totalPages);
+  const paginatedData = filteredData.slice(
+    (visiblePage - 1) * pageSize,
+    visiblePage * pageSize,
+  );
 
   const getGradeColor = (grade: string) => {
     switch (grade) {
@@ -89,10 +110,26 @@ export function ClassworkGradesTable({ classworkGrades, courseId }: ClassworkGra
   ];
 
   return (
-    <div>
+    <div className="space-y-4">
+      <div className="flex flex-wrap items-center gap-3 p-4">
+        <Input
+          className="w-full sm:max-w-sm"
+          value={searchQuery}
+          onChange={(event) => { setSearchQuery(event.target.value); setCurrentPage(1); }}
+          placeholder="Search students..."
+          aria-label="Search students"
+        />
+      </div>
+
       <DataTable 
         columns={columns} 
-        data={data}
+        data={paginatedData}
+      />
+      <CustomPagination
+        currentPage={visiblePage}
+        pageSize={pageSize}
+        totalItems={filteredData.length}
+        onPageChange={setCurrentPage}
       />
     </div>
   );

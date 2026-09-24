@@ -357,7 +357,6 @@ const CoursePage: React.FC = () => {
         <main className="min-w-0 flex-1 overflow-auto p-4 sm:p-6 lg:p-8">
           <PageHeader
             title={courseTitle}
-            sticky={false}
             description={`${courseCode} · ${course.credit_hours} Credit Hours`}
             breadcrumbs={[
               { label: "Assigned Courses", href: "/Courses/Doctor" },

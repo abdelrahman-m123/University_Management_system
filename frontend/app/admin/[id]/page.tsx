@@ -243,7 +243,7 @@ const StaffProfilePage: React.FC = () => {
             }
             tabs={profileTabs}
           />
-          <div className="max-w-6xl mx-auto">
+          <div className="mx-auto max-w-6xl pt-4">
             <div className="p-2 sm:p-0">
               {/* Tab Content */}
               <div>

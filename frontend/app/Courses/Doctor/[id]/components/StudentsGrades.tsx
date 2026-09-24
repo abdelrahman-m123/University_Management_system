@@ -100,8 +100,9 @@ export function StudentGradesTable({ grades, courseId }: StudentGradesTableProps
 
   return (
     <div className="space-y-4">
-      <div className="max-w-sm">
+      <div className="flex flex-wrap items-center gap-3 p-4">
         <Input
+          className="w-full sm:max-w-sm"
           value={searchQuery}
           onChange={(event) => setSearchQuery(event.target.value)}
           placeholder="Search quiz grades..."

@@ -42,13 +42,14 @@ export function PageHeader({
     <header
       className={cn(
         sticky ? "sticky top-0 z-20 bg-slate-50/95 backdrop-blur" : "relative z-10",
-        "-mx-4 -mt-4 mb-8 border-b border-slate-200 px-4 pt-4 pb-0 sm:-mx-6 sm:-mt-6 sm:px-6 lg:-mx-8 lg:-mt-8 lg:px-8",
+        "-mx-4 -mt-4 mb-8 border-b border-slate-200 px-4 pb-0 sm:-mx-6 sm:-mt-6 sm:px-6 lg:-mx-8 lg:-mt-8 lg:px-8",
+        breadcrumbs?.length ? "pt-4" : "pt-1",
         className
       )}
     >
       <div className="w-full">
         {breadcrumbs && breadcrumbs.length > 0 && (
-          <Breadcrumb className="mb-2">
+          <Breadcrumb className="mb-1">
             <BreadcrumbList>
               {breadcrumbs.map((breadcrumb, index) => {
                 const isCurrent = index === breadcrumbs.length - 1;
@@ -71,15 +72,15 @@ export function PageHeader({
             </BreadcrumbList>
           </Breadcrumb>
         )}
-        <div className="flex min-w-0 flex-col gap-3 pb-4 sm:flex-row sm:items-end sm:justify-between">
+        <div className="flex min-w-0 flex-col gap-2 pb-3 sm:flex-row sm:items-end sm:justify-between">
           <div className="min-w-0">
             {eyebrow && (
               <p className="mb-0.5 text-xs font-semibold uppercase tracking-wide text-blue-900">
                 {eyebrow}
               </p>
             )}
-            {showTitle && <h1 className="truncate text-2xl font-bold text-slate-900">{title}</h1>}
-            {description && <p className="mt-0.5 text-sm text-slate-500">{description}</p>}
+            {showTitle && <h1 className="truncate text-xl font-bold text-slate-900">{title}</h1>}
+            {description && <div className="mt-0.5 text-sm text-slate-500">{description}</div>}
           </div>
           {actions && <div className="flex w-full shrink-0 flex-wrap items-center gap-2 sm:w-auto sm:justify-end">{actions}</div>}
         </div>

@@ -1,52 +1,104 @@
 # University Management System
 
-A full-stack university management platform for academic staff and students. The system combines role-based course administration, academic calendar management, registration workflows, assessments, announcements, and realtime enrollment updates in one Next.js and ASP.NET Core application.
+A full-stack university operations platform built with **Next.js 16**, **ASP.NET Core**, **Entity Framework Core**, **SQL Server**, and **SignalR**. It showcases **RBAC** across frontend route protection and JWT-authorized backend endpoints, **real-time chat**, and capacity-aware **course enrollment with waitlist promotion**.
 
-## Highlights
+The project brings academic administration, course delivery, assessments, announcements, and role-aware student services into one workspace.
 
-- **Role-based workspaces** for Admins, Doctors, Teaching Assistants, and Students.
-- **Academic calendar management** for academic years, semesters, registration windows, add/drop dates, publication controls, and course offerings.
-- **Course registration** with search, semester filtering, application status, and capacity-aware enrollment.
-- **Realtime waitlist updates** using SignalR. Students can see enrollment changes without refreshing the page when a seat becomes available.
-- **Background waitlist promotion** in ASP.NET Core. A hosted worker promotes the next eligible student when capacity opens, while an outbox worker publishes reliable realtime events.
-- **Interactive API documentation** through Swagger UI with an OpenAPI v3 contract and JWT bearer authorization support.
-- **Assessment tools** for quizzes, questionnaires, grading, due dates, and student feedback.
-- **Announcements and comments** inside course pages.
-- **Server Actions** in the frontend BFF layer for authenticated client-to-server operations.
+## Features
 
-## Screenshots
+- **RBAC:** role-based frontend workspaces and route protection for Administrators, Doctors, Teaching Assistants, and Students, with JWT-backed backend endpoint authorization.
+- **Real-time chat:** searchable student-to-doctor conversations with SignalR live updates and unread-message tracking.
+- **Enrollment and waitlist promotion:** capacity-aware registration, automatic background promotion, transactional outbox messages, and SignalR enrollment updates.
+- Academic year, semester, registration-window, add/drop-window, and course-offering management.
+- Course registration with search, semester filtering, enrollment statuses, and pagination.
+- Course announcements, comments, questionnaires, quizzes, grading, and student feedback.
+- Consistent responsive UI with shared headers, breadcrumbs, table toolbars, filters, pagination, and sticky layouts.
+- OpenAPI and interactive Swagger documentation for protected API endpoints.
 
-The screenshots below show the current application UI and seeded local demo data.
+## Product tour
 
-### Student course dashboard
+The screenshots use seeded local demo data and reflect the current role-aware interface. Each non-home frontend view is included below.
 
-Registered courses, semester status, and the quiz calendar are grouped into the same student workspace.
+### Shared views
 
-![Student course dashboard](./screenshots/student-courses.png)
+| View | Screenshot |
+| --- | --- |
+| Sign in | ![Sign in](./screenshots/frontend/login.png) |
 
-### Course registration and live updates
+### Administrator views
 
-Students can search the catalogue, select a semester, and see the realtime connection state alongside enrollment status.
+| View | Screenshot |
+| --- | --- |
+| User management | ![Administrator user management](./screenshots/frontend/admin-user-management.png) |
+| Staff profile | ![Administrator staff profile](./screenshots/frontend/admin-staff-profile.png) |
+| Course applications | ![Administrator course applications](./screenshots/frontend/admin-course-applications.png) |
+| Course management | ![Administrator course management](./screenshots/frontend/admin-course-management.png) |
+| Academic calendar | ![Administrator academic calendar](./screenshots/frontend/admin-academic-calendar.png) |
 
-![Course registration](./screenshots/course-registration.png)
+### Doctor views
 
-### Course detail and collaboration
+| View | Screenshot |
+| --- | --- |
+| Assigned courses | ![Doctor assigned courses](./screenshots/frontend/doctor-assigned-courses.png) |
+| Course workspace | ![Doctor course workspace](./screenshots/frontend/doctor-course-workspace.png) |
+| Chats | ![Doctor chats](./screenshots/frontend/doctor-chats.png) |
 
-Course announcements, questionnaires, grades, staff information, and comments live under one course page.
+### Teaching Assistant views
 
-![Course detail](./screenshots/course-detail.png)
+| View | Screenshot |
+| --- | --- |
+| Assigned courses | ![Teaching Assistant assigned courses](./screenshots/frontend/ta-assigned-courses.png) |
+| Course workspace | ![Teaching Assistant course workspace](./screenshots/frontend/ta-course-workspace.png) |
 
-### Academic calendar administration
+### Student views
 
-The calendar uses compact tabs for academic years, semesters, and offerings. Semester cards separate term dates, Cairo registration windows, and add/drop windows so the important dates can be scanned quickly.
+| View | Screenshot |
+| --- | --- |
+| Registered courses | ![Student registered courses](./screenshots/frontend/student-registered-courses.png) |
+| Quiz calendar | ![Student quiz calendar](./screenshots/frontend/student-quiz-calendar.png) |
+| Course detail | ![Student course detail](./screenshots/frontend/student-course-detail.png) |
+| Course registration | ![Student course registration](./screenshots/frontend/student-course-registration.png) |
+| Chats | ![Student chats](./screenshots/frontend/student-chats.png) |
 
-![Academic calendar](./screenshots/academic-calendar.png)
+### API documentation
 
-### Swagger API documentation
+Swagger exposes the API contract, request/response schemas, controller groups, and JWT-protected endpoint testing. The documentation capture is split into one image per controller for easier review.
 
-Swagger groups the REST endpoints by controller, shows request and response schemas, and provides an **Authorize** control for testing protected endpoints with a JWT.
+| Controller | Screenshot |
+| --- | --- |
+| AcademicCalendar | ![AcademicCalendar Swagger capture](./screenshots/swagger/academic-calendar.png) |
+| Announcements | ![Announcements Swagger capture](./screenshots/swagger/announcements.png) |
+| Auth | ![Auth Swagger capture](./screenshots/swagger/auth.png) |
+| Chats | ![Chats Swagger capture](./screenshots/swagger/chats.png) |
+| CourseContents | ![CourseContents Swagger capture](./screenshots/swagger/course-contents.png) |
+| Courses | ![Courses Swagger capture](./screenshots/swagger/courses.png) |
+| Enrollments | ![Enrollments Swagger capture](./screenshots/swagger/enrollments.png) |
+| Health | ![Health Swagger capture](./screenshots/swagger/health.png) |
+| Questionnaires | ![Questionnaires Swagger capture](./screenshots/swagger/questionnaires.png) |
+| Quizzes | ![Quizzes Swagger capture](./screenshots/swagger/quizzes.png) |
+| Setup | ![Setup Swagger capture](./screenshots/swagger/setup.png) |
+| Staff | ![Staff Swagger capture](./screenshots/swagger/staff.png) |
+| StaffCourses | ![StaffCourses Swagger capture](./screenshots/swagger/staff-courses.png) |
+| Students | ![Students Swagger capture](./screenshots/swagger/students.png) |
 
-![Swagger UI](./screenshots/swagger-ui.png)
+## Architecture at a glance
+
+```text
+Next.js App Router
+  ├─ Server Actions / authenticated BFF operations
+  ├─ Role-aware workspaces and shared UI primitives
+  └─ SignalR client for live enrollment updates
+            │
+            ▼
+ASP.NET Core Web API
+  ├─ JWT authentication and role authorization
+  ├─ Academic calendar, courses, staff, enrollment, and assessment APIs
+  ├─ EnrollmentHub for realtime events
+  └─ Background workers for waitlist promotion and outbox delivery
+            │
+            ▼
+Entity Framework Core → SQL Server
+```
 
 ## Technology
 
@@ -56,24 +108,24 @@ Swagger groups the REST endpoints by controller, shows request and response sche
 - TypeScript
 - Tailwind CSS
 - Radix/shadcn UI primitives
+- Server Actions for authenticated client-to-server operations
 - `@microsoft/signalr` for realtime enrollment updates
-- Server Actions for the frontend BFF layer
 
 ### Backend
 
-- ASP.NET Core Web API
+- ASP.NET Core Web API on .NET 8
 - Entity Framework Core with SQL Server
 - JWT authentication and role-based authorization
-- Swagger UI and an OpenAPI v3 endpoint for interactive API exploration
-- SignalR hub for enrollment events
-- Hosted background workers for waitlist promotion and outbox delivery
-- Database migrations for academic calendar, offerings, waitlists, and outbox messages
+- Swagger UI and OpenAPI v3
+- SignalR enrollment hub
+- Hosted workers for waitlist promotion and outbox delivery
+- Database migrations and development data seeding
 
 ## Project structure
 
 ```text
 frontend/
-  app/                  Next.js routes, pages, actions, and UI
+  app/                  Next.js routes, pages, actions, and workflows
   components/           Shared layout and UI primitives
   public/               Static frontend assets
 
@@ -85,47 +137,17 @@ UMS.Api/
   Data/                 DbContext and demo seeding
   Migrations/           EF Core migrations
 
-screenshots/            Current README screenshots
+screenshots/            Portfolio screenshots used in this README
 docker-compose.yml      SQL Server, API, and frontend development stack
 ```
 
-## Backend API documentation
-
-When the API runs with `ASPNETCORE_ENVIRONMENT=Development`, the documentation endpoints are available at:
-
-| Resource | URL | Purpose |
-| --- | --- | --- |
-| Swagger UI | [http://localhost:5219/swagger](http://localhost:5219/swagger) | Browse endpoints, inspect schemas, and send test requests |
-| Swagger JSON | [http://localhost:5219/swagger/v1/swagger.json](http://localhost:5219/swagger/v1/swagger.json) | OpenAPI v3 contract generated by Swagger |
-| OpenAPI JSON | [http://localhost:5219/openapi/v1.json](http://localhost:5219/openapi/v1.json) | ASP.NET Core's built-in OpenAPI document |
-
-Swagger uses the same controllers and DTOs as the application. It covers the following API areas:
-
-| Area | Base route | Examples |
-| --- | --- | --- |
-| Authentication | `/api/auth` | Log in and create users |
-| Academic calendar | `/api/academic-years`, `/api/semesters`, `/api/offerings` | Manage years, terms, dates, and course offerings |
-| Courses and staff | `/api/courses`, `/api/staff`, `/api/staff-courses`, `/api/students` | Manage courses, profiles, and teaching assignments |
-| Enrollment | `/api/enrollments` | Register, review, withdraw, join a waitlist, and leave a waitlist |
-| Course delivery | `/api/announcements`, `/api/quizzes`, `/api/questionnaires`, `/api/course-contents` | Deliver learning material and assessments |
-| System health | `/api/health` | Check API availability |
-
-### Authenticate in Swagger
-
-1. Call `POST /api/auth/login` with a development account to receive an access token.
-2. Select **Authorize** at the top of Swagger UI.
-3. Paste the token as `Bearer {token}`.
-4. Swagger includes the authorization header in subsequent protected requests.
-
-The Swagger UI is enabled only in the Development environment. Production deployments should expose API documentation through an authenticated internal route or a separately published API portal.
-
-## Run locally
+## Run the project locally
 
 ### Prerequisites
 
 - Docker Desktop
-- Node.js 18 or newer (for frontend-only work)
-- .NET 8 SDK (for backend-only work)
+- Node.js 18 or newer for frontend-only work
+- .NET 8 SDK for backend-only work
 
 ### Start the full stack
 
@@ -133,13 +155,13 @@ The Swagger UI is enabled only in the Development environment. Production deploy
 docker compose up --build
 ```
 
-The services are available at:
+Services:
 
 - Frontend: [http://localhost:3000](http://localhost:3000)
 - API: [http://localhost:5219](http://localhost:5219)
 - SQL Server: `localhost:14333`
 
-The API applies migrations and seeds demo data on startup. The seeded demo accounts use the password `password` in the local development environment.
+The API applies migrations and seeds demo data on startup. The login screen includes a demo-account selector; seeded development accounts use the password `password`.
 
 ### Run the frontend without Docker
 
@@ -151,20 +173,39 @@ npm run dev
 
 ## Realtime enrollment flow
 
-1. A student registers for a full course and is placed on the waitlist when capacity is reached.
-2. The enrollment service stores the waitlist position and writes an outbox message in the same database transaction.
-3. The `WaitlistPromotionWorker` periodically checks published offerings during registration or add/drop windows.
-4. When a seat opens, the worker promotes the next waitlisted enrollment.
-5. The `EnrollmentOutboxWorker` delivers the event through `EnrollmentHub`.
-6. The student’s Next.js page receives the SignalR event and updates the visible status without a full-page reload.
+1. A student registers for a full offering and is placed on the waitlist.
+2. The enrollment service stores the waitlist position and writes an outbox message in the same transaction.
+3. `WaitlistPromotionWorker` checks published offerings during registration and add/drop windows.
+4. When capacity opens, the next eligible student is promoted.
+5. `EnrollmentOutboxWorker` publishes the event through `EnrollmentHub`.
+6. The Next.js client updates the visible status without a full-page reload.
 
-This keeps the UI responsive while giving the backend a reliable place to handle retries, ordering, and capacity checks.
+This separates business rules, reliable event delivery, and UI updates while keeping enrollment changes observable to the user.
+
+## API documentation
+
+When the API runs in Development, open [Swagger UI](http://localhost:5219/swagger).
+
+| Area | Base route | Examples |
+| --- | --- | --- |
+| Authentication | `/api/auth` | Login and user creation |
+| Academic calendar | `/api/academic-years`, `/api/semesters`, `/api/offerings` | Years, terms, dates, and offerings |
+| Courses and staff | `/api/courses`, `/api/staff`, `/api/staff-courses`, `/api/students` | Profiles and teaching assignments |
+| Enrollment | `/api/enrollments` | Register, withdraw, waitlist, and leave waitlist |
+| Course delivery | `/api/announcements`, `/api/quizzes`, `/api/questionnaires`, `/api/course-contents` | Learning material and assessments |
+| System health | `/api/health` | API availability |
+
+To test protected endpoints in Swagger:
+
+1. Call `POST /api/auth/login` with a seeded development account.
+2. Copy the returned access token.
+3. Select **Authorize** and enter `Bearer {token}`.
 
 ## User roles
 
 | Role | Main capabilities |
 | --- | --- |
-| **Admin** | Manage staff, courses, academic years, semesters, offerings, and publication state |
+| **Administrator** | Manage staff, courses, academic years, semesters, offerings, and publication state |
 | **Doctor** | Manage assigned courses, announcements, quizzes, questionnaires, and grades |
 | **Teaching Assistant** | Support assigned courses, assessments, announcements, and grading workflows |
 | **Student** | Browse offerings, register or join waitlists, view courses, complete assessments, and comment on announcements |
@@ -179,5 +220,3 @@ npm run lint
 # Backend build
 dotnet build ../UMS.Api/UMS.Api.csproj --no-restore
 ```
-
-The repository may contain unrelated legacy TypeScript diagnostics outside the files being changed. The commands above are the targeted checks used for the current frontend and backend work.

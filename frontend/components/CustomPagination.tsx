@@ -91,10 +91,8 @@ export function CustomPagination({
   const pageNumbers = generatePageNumbers();
 
   return (
-    <div className=" flex">
-      
-      
-      <Pagination className="justify-between">
+    <div className="flex flex-wrap items-center justify-between gap-3 px-0 py-3">
+      <Pagination className="mx-0 w-auto justify-start">
         <PaginationContent>
           <PaginationItem>
             <PaginationPrevious
@@ -152,18 +150,16 @@ export function CustomPagination({
             />
           </PaginationItem>
         </PaginationContent>
-        <div className="flex  items-center text-sm text-gray-600 gap-3">
-        <div>
+      </Pagination>
+      <div className="flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-slate-500">
+        <span>
           Showing {((currentPage - 1) * pageSize) + 1} -{" "}
           {Math.min(currentPage * pageSize, totalItems)} of {totalItems} items
-        </div>
-        <div>
+        </span>
+        <span>
           Page {currentPage} of {totalPages}
-        </div>
+        </span>
       </div>
-      </Pagination>
-
-      
     </div>
   );
 }

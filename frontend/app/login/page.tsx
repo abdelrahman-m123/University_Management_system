@@ -26,6 +26,7 @@ const Login: React.FC = () => {
   const handleDemoAccountChange = (value: string) => {
     const accounts: Record<string, { email: string; role: string }> = {
       student: { email: "abdelrahman@university.com", role: "student" },
+      registrationTester: { email: "registration.tester@university.com", role: "student" },
       Doctor: { email: "ahmed.hassan@uni.com", role: "Doctor" },
       TA: { email: "fatimaali@university.com", role: "TA" },
       admin: { email: "admin.one@university.com", role: "admin" },
@@ -138,6 +139,7 @@ const Login: React.FC = () => {
               </SelectTrigger>
               <SelectContent>
                 <SelectItem value="student">Student</SelectItem>
+                <SelectItem value="registrationTester">Registration Tester (1 course)</SelectItem>
                 <SelectItem value="Doctor">Doctor</SelectItem>
                 <SelectItem value="TA">Teaching Assistant</SelectItem>
                 <SelectItem value="admin">Administrator</SelectItem>
